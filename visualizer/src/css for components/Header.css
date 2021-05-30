@@ -1,0 +1,23 @@
+.title {
+    text-align: center;
+    color: white;
+    font-size: 75px;
+    transition: 0.5s;
+}
+
+.title:hover {
+    cursor: pointer;
+    color: black;
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
+}
+
+.title:after {
+    padding-top: -2.5px;
+    padding-bottom: -2.5px;
+}
+
+.header-container {
+    text-align: center;
+    background-color: #fc6c58;
+}

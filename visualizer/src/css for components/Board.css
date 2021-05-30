@@ -1,0 +1,14 @@
+.board .cell {
+    transition: background-color 0.2s linear;
+}
+
+.board {
+    position: absolute;
+    margin-top: 2.5px;
+    border-collapse: collapse;
+}
+
+.board .row {
+    display: 'flex';
+    flex-direction: 'row';
+}
