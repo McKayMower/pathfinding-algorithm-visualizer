@@ -18,7 +18,6 @@ const createBoard = (rowCount, colCount) => {
     return board
 }
 
-
 const handleOnClick = (event, x, y) => {
     event.target.style.backgroundColor === 'white' ?
         event.target.style.backgroundColor = 'black' : event.target.style.backgroundColor = 'white'
@@ -30,10 +29,10 @@ const Board = () => {
 
     //creates new board on mount
     useEffect(() => {
-        const newBoard = createBoard(28, 75);
+        const newBoard = createBoard(21, 56);
         setBoard(newBoard);
     }, []);
-    //hello
+
     //styling for individual cells
     let style = {
         width: 25,
@@ -50,17 +49,18 @@ const Board = () => {
                         <tr className='row' key={ri} >
                             {row.map((col, ci) => {
                                 return (
-                                    <td className='cell' key={ri + '-' + ci}
+                                    <td className='cell'
+                                        key={ri + '-' + ci}
                                         style={style}
-                                        onClick={(event) => {handleOnClick(event, ci, ri)}}
-                                        onDragStart={(event) => {event.preventDefault()
-                                        console.log('drag started');}}
+                                        onDragStart={(event) => { event.preventDefault() }}
                                         onPointerDown={(event) => {
                                             setClicking(true)
                                             handleOnClick(event, ci, ri)
                                         }}
-                                        onPointerUp={() => {setClicking(false)}}
-                                        onPointerOver={(event) => {clicking && handleOnClick(event, ci, ri)}}
+                                        onPointerUp={() => setClicking(false)}
+                                        onPointerOver={(event) => {
+                                            clicking && handleOnClick(event, ci, ri)
+                                        }}
                                     >
                                     </td>)
                             })}

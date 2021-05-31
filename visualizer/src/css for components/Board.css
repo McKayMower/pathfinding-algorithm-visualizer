@@ -3,11 +3,11 @@
 }
 
 .board {
-    margin-top: 2.5px;
     border-collapse: collapse;
 }
 
+/* 
 .board .row {
     display: 'flex';
     flex-direction: 'row';
-}
+} */
