@@ -6,9 +6,6 @@ const handleRedirect = () => {
     console.log('page refresh here')
 }
 
-const handleBoardReset = () => {
-    console.log('reset board here')
-}
 const handleDijkstras = () => {
     console.log('handle dijkstras');
 }
@@ -25,9 +22,14 @@ const handleVisualization = () => {
     console.log('handle visualization');
 }
 
-const Header = () => {
+const Header = ({ callback }) => {
     const [showMenu, setShowMenu] = useState(false)
-
+    const [visualizeString, setVisualizeString] = useState('Show Me!')
+    
+    const sendCallback = () => {
+        callback(true)
+    }
+    
     return (
         <div className='header-container'>
             <h1 className='title' onClick={() => handleRedirect()}>Pathfinding Visualizer</h1>
@@ -38,25 +40,36 @@ const Header = () => {
                 Select Algorithm
                 {showMenu &&
                     <div className='menu'>
-                        <button onClick={() => {handleDijkstras() }}>Dijkstra's</button>
-                        <button onClick={() => {handleDFS()}}>DFS</button>
-                        <button onClick={() => {handleBFS()}}>BFS</button>
+                        <button onClick={() => {
+                            handleDijkstras()
+                            setVisualizeString('Show Me Dijkstra\'s!')
+                        }}>Dijkstra's</button>
+                        <button onClick={() => {
+                            handleDFS()
+                            setVisualizeString('Show Me Depth-First!')
+                        }}>Depth-First</button>
+                        <button onClick={() => {
+                            handleBFS()
+                            setVisualizeString('Show Me Breadth-First!')
+                        }}>Breadth-First</button>
                     </div>
                 }
             </button>
 
             <button
                 className='visualize-button'
-                onClick={()=>{ handleVisualization() }}>
-                Visualize Algorithm!
+                onClick={() => {visualizeString === 'Show Me!' ?
+                        setVisualizeString('Pick an Algorithm') : handleVisualization()
+                }}>
+                {visualizeString}
             </button>
 
             <button
                 className='clear-button'
-                onClick={() => { handleBoardReset() }}>
+                onClick={sendCallback}>
                 Clear Board
             </button>
-        </div>
+        </div >
     )
 }
 

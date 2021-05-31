@@ -22,15 +22,14 @@ const handleOnClick = (event, x, y) => {
     event.target.style.backgroundColor === 'white' ?
         event.target.style.backgroundColor = 'black' : event.target.style.backgroundColor = 'white'
 }
-
-const Board = () => {
+const Board = ({ callback, clearValue }) => {
     const [board, setBoard] = useState([]);
     const [clicking, setClicking] = useState(false);
 
-    //creates new board on mount
+    //creates new board
     useEffect(() => {
-        const newBoard = createBoard(21, 56);
-        setBoard(newBoard);
+        const initialBoard = createBoard(22, 56);
+        setBoard(initialBoard);
     }, []);
 
     //styling for individual cells
