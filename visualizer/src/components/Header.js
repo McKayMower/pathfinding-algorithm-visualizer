@@ -22,14 +22,10 @@ const handleVisualization = () => {
     console.log('handle visualization');
 }
 
-const Header = ({ callback }) => {
+const Header = () => {
     const [showMenu, setShowMenu] = useState(false)
     const [visualizeString, setVisualizeString] = useState('Show Me!')
-    
-    const sendCallback = () => {
-        callback(true)
-    }
-    
+
     return (
         <div className='header-container'>
             <h1 className='title' onClick={() => handleRedirect()}>Pathfinding Visualizer</h1>
@@ -58,15 +54,14 @@ const Header = ({ callback }) => {
 
             <button
                 className='visualize-button'
-                onClick={() => {visualizeString === 'Show Me!' ?
-                        setVisualizeString('Pick an Algorithm') : handleVisualization()
+                onClick={() => {
+                    visualizeString === 'Show Me!' ?
+                    setVisualizeString('Pick an Algorithm') : handleVisualization()
                 }}>
                 {visualizeString}
             </button>
 
-            <button
-                className='clear-button'
-                onClick={sendCallback}>
+            <button className='clear-button'>
                 Clear Board
             </button>
         </div >

@@ -22,7 +22,7 @@ const handleOnClick = (event, x, y) => {
     event.target.style.backgroundColor === 'white' ?
         event.target.style.backgroundColor = 'black' : event.target.style.backgroundColor = 'white'
 }
-const Board = ({ callback, clearValue }) => {
+const Board = () => {
     const [board, setBoard] = useState([]);
     const [clicking, setClicking] = useState(false);
 
@@ -32,7 +32,7 @@ const Board = ({ callback, clearValue }) => {
         setBoard(initialBoard);
     }, []);
 
-    //styling for individual cells
+    //for individual cells
     let style = {
         width: 25,
         height: 25,
