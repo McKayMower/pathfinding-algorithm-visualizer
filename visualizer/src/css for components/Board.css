@@ -3,11 +3,10 @@
 }
 
 .board {
+    width: 100%;
     border-collapse: collapse;
 }
 
-/* 
-.board .row {
-    display: 'flex';
-    flex-direction: 'row';
-} */
+.row {
+    height: 100%;
+}
