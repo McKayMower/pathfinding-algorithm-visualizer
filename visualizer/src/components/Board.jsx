@@ -10,7 +10,11 @@ const createBoard = (rowCount, colCount) => {
                 x: x,
                 y: y,
                 visited: false,
-                isWall: false
+                isWall: false,
+                isStart: false,
+                isStop: false,
+                distance: Infinity,
+                prev: null,
             });
         }
         board.push(col);
@@ -18,24 +22,34 @@ const createBoard = (rowCount, colCount) => {
     return board
 }
 
-const handleOnClick = (event, x, y) => {
-    event.target.style.backgroundColor === 'white' ?
-        event.target.style.backgroundColor = 'black' : event.target.style.backgroundColor = 'white'
-}
 const Board = () => {
     const [board, setBoard] = useState([]);
     const [clicking, setClicking] = useState(false);
 
+    let walls = []
+    const handleOnClick = (event, x, y) => {
+        if(event.target.style.backgroundColor === 'white'){
+            event.target.style.backgroundColor = 'black'
+            walls.push({x,y})
+            console.log(walls)
+        }
+        else {
+            event.target.style.backgroundColor = 'white'
+            walls = walls.filter(wall => wall !== {x,y})
+            console.log(walls)
+        }
+    }
+    
+
     //creates new board
     useEffect(() => {
         const initialBoard = createBoard(22, 56);
-        setBoard(initialBoard);
+        setBoard(initialBoard)
     }, []);
 
-    //for individual cells
     let style = {
-        width: 25,
-        height: 25,
+        width: '25px',
+        height: '25px',
         border: '0.5px solid black',
         backgroundColor: 'white',
     }
@@ -49,15 +63,15 @@ const Board = () => {
                             {row.map((col, ci) => {
                                 return (
                                     <td className='cell'
-                                        key={ri + '-' + ci}
                                         style={style}
+                                        key={ri + '-' + ci}
                                         onDragStart={(event) => { event.preventDefault() }}
                                         onPointerDown={(event) => {
                                             setClicking(true)
                                             handleOnClick(event, ci, ri)
                                         }}
                                         onPointerUp={() => setClicking(false)}
-                                        onPointerOver={(event) => {
+                                        onMouseOver={(event) => {
                                             clicking && handleOnClick(event, ci, ri)
                                         }}
                                     >
