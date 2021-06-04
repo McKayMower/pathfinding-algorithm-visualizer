@@ -21,19 +21,25 @@ const handleVisualization = () => {
     console.log('handle visualization');
 }
 
-const Header = () => {
+const Header = ( {callBack} ) => {
+
+    const sendCallback = () => {
+        callBack('hello')
+    }
+
     const [showMenu, setShowMenu] = useState(false)
     const [visualizeString, setVisualizeString] = useState('Show Me!')
-
+    
     return (
         <div className='header-container'>
-            <h1 className='title' onClick={() => handleRedirect()}>Pathfinding Visualizer</h1>
+            <h1 className='title' 
+                onClick={() => handleRedirect()}>Pathfinding Visualizer</h1>
             <button className='algo-select'
                 onClick={() => setShowMenu(!showMenu ? true : false)}
                 onMouseEnter={() => setShowMenu(true)}
                 onMouseLeave={() => setShowMenu(false)}>
                 Select Algorithm
-                {showMenu &&
+                {showMenu && 
                     <div className='menu'>
                         <button onClick={() => {
                             handleDijkstras()
@@ -60,7 +66,9 @@ const Header = () => {
                 {visualizeString}
             </button>
 
-            <button className='clear-button'>
+            <button className='clear-button'
+                onClick={sendCallback}
+                >
                 Clear Board
             </button>
         </div >

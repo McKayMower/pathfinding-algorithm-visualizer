@@ -22,30 +22,30 @@ const createBoard = (rowCount, colCount) => {
     return board
 }
 
-const Board = () => {
-    const [board, setBoard] = useState([]);
-    const [clicking, setClicking] = useState(false);
+let walls = []
 
-    let walls = []
-    const handleOnClick = (event, x, y) => {
-        if(event.target.style.backgroundColor === 'white'){
-            event.target.style.backgroundColor = 'black'
-            walls.push({x,y})
-            console.log(walls)
-        }
-        else {
-            event.target.style.backgroundColor = 'white'
-            walls = walls.filter(wall => wall !== {x,y})
-            console.log(walls)
-        }
+const handleOnClick = (event, x, y) => {
+    if(event.target.style.backgroundColor === 'white'){
+        event.target.style.backgroundColor = 'black'
+        walls.push({x,y})
+        console.log(walls)
     }
-    
+    else {
+        event.target.style.backgroundColor = 'white'
+        walls = walls.filter(wall => wall !== {x,y})
+        console.log(walls)
+    }
+}
+const Board = ({clearValue}) => {
+    const [board, setBoard] = useState([])
+    const [clicking, setClicking] = useState(false)
+    //const [clearValue, setClearValue] = useState(false)
 
     //creates new board
-    useEffect(() => {
-        const initialBoard = createBoard(22, 56);
-        setBoard(initialBoard)
-    }, []);
+    useEffect(() =>{
+        console.log('CLEARED BOARD');
+        setBoard(createBoard(29,56))
+    }, [clearValue])
 
     let style = {
         width: '25px',
