@@ -42,12 +42,7 @@ const Board = ({ clearValue }) => {
             let col = [];
             for (let y = 0; y < colCount; y++) {
                 col.push({
-                    x: x,
-                    y: y,
                     visited: false,
-                    isWall: false,
-                    isStart: false,
-                    isStop: false,
                     distance: Infinity,
                     prev: null,
                 });
