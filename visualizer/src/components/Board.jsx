@@ -22,6 +22,8 @@ const createBoard = (rowCount, colCount) => {
     return board
 }
 
+//eat piss
+
 let walls = []
 
 const handleOnClick = (event, x, y) => {
