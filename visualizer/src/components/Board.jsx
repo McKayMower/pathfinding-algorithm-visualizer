@@ -6,8 +6,8 @@ const Board = ({ clearValue }) => {
     const [board, setBoard] = useState([])
     const [clickingStart, setClickingStart] = useState(false)
     const [startCoordinates, setStartCoordinates] = useState({ row: 15, col: 14 })
-    const [clickingStop, setClickingStop] = useState(false)
     const [stopCoordinates, setStopCoordinates] = useState({ row: 15, col: 42 })
+    const [clickingStop, setClickingStop] = useState(false)
     const [clickingCell, setClickingCell] = useState(false)
 
     let style = {
@@ -59,39 +59,55 @@ const Board = ({ clearValue }) => {
 
     const handleMouseOver = (event, ci, ri) => {
         if (clickingCell) {
-            if (event.currentTarget.className === 'start-cell' || event.currentTarget.className === 'stop-cell') { }
+            if (event.target.className === 'start-cell' || event.target.className === 'stop-cell'){ }
             else {
-                event.currentTarget.style.backgroundColor === 'white' ?
-                    event.currentTarget.style.backgroundColor = 'black' : event.currentTarget.style.backgroundColor = 'white'
+                if(event.target.style.backgroundColor === 'white') {
+                    event.target.style.backgroundColor = 'black'
+                    event.target.className = 'cell-wall'
+                }
+                else {
+                    event.target.style.backgroundColor = 'white'
+                    event.target.className = 'cell'
+                }
             }
         }
         else if (clickingStart) {
-            if (event.currentTarget.className === 'stop-cell') { }
+            if (event.target.className === 'stop-cell') { }
             else {
-                event.currentTarget.style.backgroundColor = 'green'
-                event.currentTarget.className = 'start-cell'
+                event.target.style.backgroundColor = 'green'
+                event.target.className = 'start-cell'
                 setStartCoordinates({row: ri, col: ci })
             }
         }
         else if (clickingStop) {
-            if (event.currentTarget.className === 'start-cell') { }
+            if (event.target.className === 'start-cell') { }
             else {
-                event.currentTarget.style.backgroundColor = 'red'
-                event.currentTarget.className = 'stop-cell'
+                event.target.style.backgroundColor = 'red'
+                event.target.className = 'stop-cell'
                 setStopCoordinates({row: ri, col: ci })
             }
         }
         else { }
     }
+    const handleCellClick = (event) => {
+        if(event.target.style.backgroundColor === 'white') {
+            event.target.style.backgroundColor = 'black'
+            event.target.className = 'cell-wall'
+        }
+        else {
+            event.target.style.backgroundColor = 'white'
+            event.target.className = 'cell'
+        }
+    }
 
     const handleSSLeave = (event, ci, ri) => {
         if (clickingStart) {
-            event.currentTarget.className = 'cell'
-            event.currentTarget.style.backgroundColor = 'white'
+            event.target.className = 'cell'
+            event.target.style.backgroundColor = 'white'
         }
         else if (clickingStop) {
-            event.currentTarget.className = 'cell'
-            event.currentTarget.style.backgroundColor = 'white'
+            event.target.className = 'cell'
+            event.target.style.backgroundColor = 'white'
         }
     }
 
@@ -143,9 +159,10 @@ const Board = ({ clearValue }) => {
                                 }
                                 else {
                                     return (
-                                        <td className='cell' key={`${ri}-${ci}`} style={style}
+                                        <td className = 'cell' key={`${ri}-${ci}`} style={style}
                                             onDragStart={(event) => { event.preventDefault() }}
-                                            onPointerDown={() => {
+                                            onPointerDown={(event) => {
+                                                handleCellClick(event)
                                                 setClickingCell(true)
                                                 setClickingStart(false)
                                                 setClickingStop(false)

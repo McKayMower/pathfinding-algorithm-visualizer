@@ -1,7 +1,9 @@
 .board .cell {
    transition: background-color 0.2s linear;
 }
-
+.board .cell-wall {
+    transition: background-color 0.2s linear;
+ }
 .board {
     width: 100%;
     border-collapse: collapse;
