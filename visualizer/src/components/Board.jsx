@@ -10,6 +10,27 @@ const Board = ({ clearValue }) => {
     const [stopCoordinates, setStopCoordinates] = useState({ row: 15, col: 42 })
     const [clickingCell, setClickingCell] = useState(false)
 
+    let style = {
+        width: '25px',
+        height: '25px',
+        border: '0.5px solid black',
+        backgroundColor: 'white',
+    }
+
+    let startStyle = {
+        width: '25px',
+        height: '25px',
+        border: '0.5px solid black',
+        backgroundColor: 'green',
+    }
+
+    let stopStyle = {
+        width: '25px',
+        height: '25px',
+        border: '0.5px solid black',
+        backgroundColor: 'red',
+    }
+
     //sets board on mount
     useEffect(() => {
         setBoard(createBoard(29, 56))
@@ -38,28 +59,26 @@ const Board = ({ clearValue }) => {
 
     const handleMouseOver = (event, ci, ri) => {
         if (clickingCell) {
-            if (event.target.className === 'start-cell' || event.target.className === 'stop-cell') { }
+            if (event.currentTarget.className === 'start-cell' || event.currentTarget.className === 'stop-cell') { }
             else {
-                event.target.style.backgroundColor === 'white' ?
-                    event.target.style.backgroundColor = 'black' : event.target.style.backgroundColor = 'white'
+                event.currentTarget.style.backgroundColor === 'white' ?
+                    event.currentTarget.style.backgroundColor = 'black' : event.currentTarget.style.backgroundColor = 'white'
             }
         }
         else if (clickingStart) {
-            if (event.target.className === 'stop-cell') { }
+            if (event.currentTarget.className === 'stop-cell') { }
             else {
-                event.target.style.backgroundColor = 'green'
-                event.target.className = 'start-cell'
-                setStartCoordinates({ ri, ci })
-                console.log(startCoordinates);
+                event.currentTarget.style.backgroundColor = 'green'
+                event.currentTarget.className = 'start-cell'
+                setStartCoordinates({row: ri, col: ci })
             }
         }
         else if (clickingStop) {
-            if (event.target.className === 'start-cell') { }
+            if (event.currentTarget.className === 'start-cell') { }
             else {
-                event.target.style.backgroundColor = 'red'
-                event.target.className = 'stop-cell'
-                console.log(stopCoordinates);
-                setStopCoordinates({ ri, ci })
+                event.currentTarget.style.backgroundColor = 'red'
+                event.currentTarget.className = 'stop-cell'
+                setStopCoordinates({row: ri, col: ci })
             }
         }
         else { }
@@ -67,33 +86,13 @@ const Board = ({ clearValue }) => {
 
     const handleSSLeave = (event, ci, ri) => {
         if (clickingStart) {
-            event.target.className = 'cell'
-            event.target.style.backgroundColor = 'white'
+            event.currentTarget.className = 'cell'
+            event.currentTarget.style.backgroundColor = 'white'
         }
         else if (clickingStop) {
-            event.target.className = 'cell'
-            event.target.style.backgroundColor = 'white'
+            event.currentTarget.className = 'cell'
+            event.currentTarget.style.backgroundColor = 'white'
         }
-    }
-
-    let style = {
-        width: '25px',
-        height: '25px',
-        border: '0.5px solid black',
-        backgroundColor: 'white',
-    }
-
-    let startStyle = {
-        width: '25px',
-        height: '25px',
-        border: '0.5px solid black',
-        backgroundColor: 'green',
-    }
-    let stopStyle = {
-        width: '25px',
-        height: '25px',
-        border: '0.5px solid black',
-        backgroundColor: 'red',
     }
 
     return (
@@ -105,68 +104,59 @@ const Board = ({ clearValue }) => {
                             {row.map((col, ci) => {
                                 if (ri === startCoordinates.row && ci === startCoordinates.col) {
                                     return (
-                                        <td className='start-cell'
-                                            style={startStyle}
-                                            key={`${ri}-${ci}`}
+                                        <td className='start-cell' key={`${ri}-${ci}`} style={startStyle}
                                             onDragStart={(event) => { event.preventDefault() }}
-                                            onMouseDown={() => {
-                                                console.log('clicking start cell');
+                                            onPointerDown={() => {
                                                 setClickingStart(true)
                                                 setClickingCell(false)
                                                 setClickingStop(false)
                                             }}
-                                            onMouseUp={() => {
+                                            onPointerUp={() => {
                                                 setClickingCell(false)
                                                 setClickingStart(false)
                                                 setClickingStop(false)
                                             }}
-                                            onMouseOut={(event) => { handleSSLeave(event, ci, ri) }}
-                                            onMouseOver={(event) => { handleMouseOver(event, ci, ri) }}
+                                            onPointerOut={(event) => { handleSSLeave(event, ci, ri) }}
+                                            onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
                                         >
                                         </td>)
                                 }
                                 else if (ri === stopCoordinates.row && ci === stopCoordinates.col) {
                                     return (
-                                        <td className='stop-cell'
-                                            style={stopStyle}
-                                            key={`${ri}-${ci}`}
+                                        <td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}
                                             onDragStart={(event) => { event.preventDefault() }}
-                                            onMouseDown={() => {
-                                                console.log('clicking stop cell');
+                                            onPointerDown={() => {
                                                 setClickingStop(true)
                                                 setClickingStart(false)
                                                 setClickingCell(false)
                                             }}
-                                            onMouseUp={() => {
+                                            onPointerUp={() => {
                                                 setClickingCell(false)
                                                 setClickingStart(false)
                                                 setClickingStop(false)
                                             }}
-                                            onMouseOut={(event) => { handleSSLeave(event, ci, ri) }}
-                                            onMouseOver={(event) => { handleMouseOver(event, ci, ri) }}
+                                            onPointerOut={(event) => { handleSSLeave(event, ci, ri) }}
+                                            onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
                                         >
                                         </td>)
 
                                 }
                                 else {
                                     return (
-                                        <td className='cell'
-                                            style={style}
-                                            key={`${ri}-${ci}`}
+                                        <td className='cell' key={`${ri}-${ci}`} style={style}
                                             onDragStart={(event) => { event.preventDefault() }}
-                                            onMouseDown={() => {
-                                                console.log('clicking cell');
+                                            onPointerDown={() => {
                                                 setClickingCell(true)
                                                 setClickingStart(false)
                                                 setClickingStop(false)
                                             }}
-                                            onMouseUp={() => {
+                                            onPointerUp={() => {
                                                 setClickingCell(false)
                                                 setClickingStart(false)
                                                 setClickingStop(false)
                                             }}
-                                            onMouseOut={(event) => { handleSSLeave(event, ci, ri) }}
-                                            onMouseOver={(event) => { handleMouseOver(event, ci, ri) }}
+                                            onPointerOut={(event) => { handleSSLeave(event, ci, ri) }}
+                                            onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
                                         >
                                         </td>)
                                 }
