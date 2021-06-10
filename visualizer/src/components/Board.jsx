@@ -4,11 +4,16 @@ import '../css for components/Board.css'
 const Board = ({ clearValue }) => {
 
     const [board, setBoard] = useState([])
-    const [clickingCell, setClickingCell] = useState(false)
     const [clickingStart, setClickingStart] = useState(false)
-    const [clickingStop, setClickingStop] = useState(false)
     const [startCoordinates, setStartCoordinates] = useState({ row: 15, col: 14 })
+    const [clickingStop, setClickingStop] = useState(false)
     const [stopCoordinates, setStopCoordinates] = useState({ row: 15, col: 42 })
+    const [clickingCell, setClickingCell] = useState(false)
+
+    //sets board on mount
+    useEffect(() => {
+        setBoard(createBoard(29, 56))
+    }, [])
 
     const createBoard = (rowCount, colCount) => {
         let board = [];
@@ -45,6 +50,7 @@ const Board = ({ clearValue }) => {
                 event.target.style.backgroundColor = 'green'
                 event.target.className = 'start-cell'
                 setStartCoordinates({ ri, ci })
+                console.log(startCoordinates);
             }
         }
         else if (clickingStop) {
@@ -52,6 +58,7 @@ const Board = ({ clearValue }) => {
             else {
                 event.target.style.backgroundColor = 'red'
                 event.target.className = 'stop-cell'
+                console.log(stopCoordinates);
                 setStopCoordinates({ ri, ci })
             }
         }
@@ -62,19 +69,12 @@ const Board = ({ clearValue }) => {
         if (clickingStart) {
             event.target.className = 'cell'
             event.target.style.backgroundColor = 'white'
-            console.log(startCoordinates);
         }
         else if (clickingStop) {
             event.target.className = 'cell'
             event.target.style.backgroundColor = 'white'
-            console.log(stopCoordinates);
         }
     }
-
-    //creates new board
-    useEffect(() => {
-        setBoard(createBoard(29, 56))
-    }, [])
 
     let style = {
         width: '25px',
@@ -107,9 +107,10 @@ const Board = ({ clearValue }) => {
                                     return (
                                         <td className='start-cell'
                                             style={startStyle}
-                                            key={ri + '-' + ci}
+                                            key={`${ri}-${ci}`}
                                             onDragStart={(event) => { event.preventDefault() }}
-                                            onMouseDown={(event) => {
+                                            onMouseDown={() => {
+                                                console.log('clicking start cell');
                                                 setClickingStart(true)
                                                 setClickingCell(false)
                                                 setClickingStop(false)
@@ -119,7 +120,6 @@ const Board = ({ clearValue }) => {
                                                 setClickingStart(false)
                                                 setClickingStop(false)
                                             }}
-
                                             onMouseOut={(event) => { handleSSLeave(event, ci, ri) }}
                                             onMouseOver={(event) => { handleMouseOver(event, ci, ri) }}
                                         >
@@ -129,9 +129,10 @@ const Board = ({ clearValue }) => {
                                     return (
                                         <td className='stop-cell'
                                             style={stopStyle}
-                                            key={ri + '-' + ci}
+                                            key={`${ri}-${ci}`}
                                             onDragStart={(event) => { event.preventDefault() }}
-                                            onMouseDown={(event) => {
+                                            onMouseDown={() => {
+                                                console.log('clicking stop cell');
                                                 setClickingStop(true)
                                                 setClickingStart(false)
                                                 setClickingCell(false)
@@ -151,9 +152,10 @@ const Board = ({ clearValue }) => {
                                     return (
                                         <td className='cell'
                                             style={style}
-                                            key={ri + '-' + ci}
+                                            key={`${ri}-${ci}`}
                                             onDragStart={(event) => { event.preventDefault() }}
-                                            onMouseDown={(event) => {
+                                            onMouseDown={() => {
+                                                console.log('clicking cell');
                                                 setClickingCell(true)
                                                 setClickingStart(false)
                                                 setClickingStop(false)
