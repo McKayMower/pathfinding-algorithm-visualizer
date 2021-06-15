@@ -31,7 +31,7 @@ const Board = ({ clearValue }) => {
         backgroundColor: 'red',
     }
 
-    //sets board on mount
+    //sets board on page loadup
     useEffect(() => {
         setBoard(createBoard(29, 56))
     }, [])
@@ -54,9 +54,9 @@ const Board = ({ clearValue }) => {
 
     const handleMouseOver = (event, ci, ri) => {
         if (clickingCell) {
-            if (event.target.className === 'start-cell' || event.target.className === 'stop-cell'){ }
+            if (event.target.className === 'start-cell' || event.target.className === 'stop-cell') { }
             else {
-                if(event.target.style.backgroundColor === 'white') {
+                if (event.target.style.backgroundColor === 'white') {
                     event.target.style.backgroundColor = 'black'
                     event.target.className = 'cell-wall'
                 }
@@ -71,7 +71,7 @@ const Board = ({ clearValue }) => {
             else {
                 event.target.style.backgroundColor = 'green'
                 event.target.className = 'start-cell'
-                setStartCoordinates({row: ri, col: ci })
+                setStartCoordinates({ row: ri, col: ci })
             }
         }
         else if (clickingStop) {
@@ -79,30 +79,37 @@ const Board = ({ clearValue }) => {
             else {
                 event.target.style.backgroundColor = 'red'
                 event.target.className = 'stop-cell'
-                setStopCoordinates({row: ri, col: ci })
+                setStopCoordinates({ row: ri, col: ci })
             }
         }
         else { }
     }
+
+    const handleSSLeave = (event, ci, ri) => {
+        if (clickingStart) {
+            if (event.target.className === 'stop-cell') { }
+            else {
+                event.target.className = 'cell'
+                event.target.style.backgroundColor = 'white'
+            }
+        }
+        else if (clickingStop) {
+            if (event.target.className === 'start-cell') { }
+            else {
+                event.target.className = 'cell'
+                event.target.style.backgroundColor = 'white'
+            }
+        }
+    }
+
     const handleCellClick = (event) => {
-        if(event.target.style.backgroundColor === 'white') {
+        if (event.target.style.backgroundColor === 'white') {
             event.target.style.backgroundColor = 'black'
             event.target.className = 'cell-wall'
         }
         else {
             event.target.style.backgroundColor = 'white'
             event.target.className = 'cell'
-        }
-    }
-
-    const handleSSLeave = (event, ci, ri) => {
-        if (clickingStart) {
-            event.target.className = 'cell'
-            event.target.style.backgroundColor = 'white'
-        }
-        else if (clickingStop) {
-            event.target.className = 'cell'
-            event.target.style.backgroundColor = 'white'
         }
     }
 
@@ -154,7 +161,7 @@ const Board = ({ clearValue }) => {
                                 }
                                 else {
                                     return (
-                                        <td className = 'cell' key={`${ri}-${ci}`} style={style}
+                                        <td className='cell' key={`${ri}-${ci}`} style={style}
                                             onDragStart={(event) => { event.preventDefault() }}
                                             onPointerDown={(event) => {
                                                 handleCellClick(event)
