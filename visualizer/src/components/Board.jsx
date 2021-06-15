@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import '../css for components/Board.css'
 
-const Board = ({ clearValue }) => {
+const Board = ({ clearValue, incomingMessage }) => {
 
     const [board, setBoard] = useState([])
     const [clickingStart, setClickingStart] = useState(false)
@@ -10,6 +10,7 @@ const Board = ({ clearValue }) => {
     const [clickingStop, setClickingStop] = useState(false)
     const [clickingCell, setClickingCell] = useState(false)
     const [key, setKey] = useState(0)
+    const [message, setMessage] = useState('')
 
     let style = {
         width: '25px',
@@ -35,10 +36,19 @@ const Board = ({ clearValue }) => {
     //sets board on page loadup
     useEffect(() => {
         setBoard(createBoard(29, 56))
-        setStopCoordinates({row: 15, col: 42})
-        setStartCoordinates({row: 15, col: 14})
+        setStopCoordinates({ row: 15, col: 42 })
+        setStartCoordinates({ row: 15, col: 14 })
         setKey(prev => prev + 1)
     }, [clearValue])
+
+    useEffect(() => {
+        if (incomingMessage === 'visualize') {
+            //message (from state) is algorithm
+        }
+        else {
+            setMessage(incomingMessage)
+        }
+    }, [incomingMessage])
 
     const createBoard = (rowCount, colCount) => {
         let board = [];

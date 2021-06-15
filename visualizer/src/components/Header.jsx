@@ -5,26 +5,10 @@ const handleRedirect = () => {
     console.log('page refresh here')
 }
 
-const handleDijkstras = () => {
-    console.log('handle dijkstras')
-}
-
-const handleDFS = () => {
-    console.log('handle DFS')
-}
-
-const handleBFS = () => {
-    console.log('handle BFS')
-}
-
-const handleVisualization = () => {
-    console.log('handle visualization')
-}
-
 const Header = ( {callBack} ) => {
 
-    const sendCallback = () => {
-        callBack('hello')
+    const sendCallback = (message) => {
+        callBack(message)
     }
 
     const [showMenu, setShowMenu] = useState(false)
@@ -42,15 +26,15 @@ const Header = ( {callBack} ) => {
                 {showMenu && 
                     <div className='menu'>
                         <button onClick={() => {
-                            handleDijkstras()
+                            sendCallback('dijkstras')
                             setVisualizeString('Show Me Dijkstra\'s!')
                         }}>Dijkstra's</button>
                         <button onClick={() => {
-                            handleDFS()
+                            sendCallback('depth-first')
                             setVisualizeString('Show Me Depth-First!')
                         }}>Depth-First</button>
                         <button onClick={() => {
-                            handleBFS()
+                            sendCallback('breadth-first')
                             setVisualizeString('Show Me Breadth-First!')
                         }}>Breadth-First</button>
                     </div>
@@ -60,14 +44,16 @@ const Header = ( {callBack} ) => {
             <button
                 className='visualize-button'
                 onClick={() => {
-                    visualizeString === 'Show Me!' ?
-                    setVisualizeString('Pick an Algorithm') : handleVisualization()
+                    sendCallback('visualize')
+                    visualizeString === 'Show Me!' && setVisualizeString('Pick an Algorithm')
                 }}>
                 {visualizeString}
             </button>
 
             <button className='clear-button'
-                onClick={sendCallback}
+                onClick={() => {
+                    sendCallback('clear')
+                }}
                 >
                 Clear Board
             </button>
