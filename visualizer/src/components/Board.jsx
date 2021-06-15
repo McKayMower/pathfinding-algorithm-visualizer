@@ -9,6 +9,7 @@ const Board = ({ clearValue }) => {
     const [stopCoordinates, setStopCoordinates] = useState({ row: 15, col: 42 })
     const [clickingStop, setClickingStop] = useState(false)
     const [clickingCell, setClickingCell] = useState(false)
+    const [key, setKey] = useState(0)
 
     let style = {
         width: '25px',
@@ -34,7 +35,10 @@ const Board = ({ clearValue }) => {
     //sets board on page loadup
     useEffect(() => {
         setBoard(createBoard(29, 56))
-    }, [])
+        setStopCoordinates({row: 15, col: 42})
+        setStartCoordinates({row: 15, col: 14})
+        setKey(prev => prev + 1)
+    }, [clearValue])
 
     const createBoard = (rowCount, colCount) => {
         let board = [];
@@ -45,7 +49,8 @@ const Board = ({ clearValue }) => {
                     visited: false,
                     distance: Infinity,
                     prev: null,
-                });
+                    cellWall: false,
+                })
             }
             board.push(col);
         }
@@ -97,7 +102,12 @@ const Board = ({ clearValue }) => {
     }
 
     return (
-        <table className='board' >
+        <table className='board' key={key}
+            onMouseLeave={() => {
+                setClickingCell(false)
+                setClickingStart(false)
+                setClickingStop(false)
+            }}>
             <tbody>
                 {board.map((row, ri) => {
                     return (

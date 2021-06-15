@@ -6,19 +6,19 @@ const handleRedirect = () => {
 }
 
 const handleDijkstras = () => {
-    console.log('handle dijkstras');
+    console.log('handle dijkstras')
 }
 
 const handleDFS = () => {
-    console.log('handle DFS');
+    console.log('handle DFS')
 }
 
 const handleBFS = () => {
-    console.log('handle BFS');
+    console.log('handle BFS')
 }
 
 const handleVisualization = () => {
-    console.log('handle visualization');
+    console.log('handle visualization')
 }
 
 const Header = ( {callBack} ) => {

@@ -4,11 +4,9 @@ import Header from './components/Header'
 import {useState} from 'react'
 
 function App() {
-
   const [clearValue, setClearValue] = useState(false)
 
   const callbackFunction = (value) => {
-      //console.log('received clear button press' + value)
       setClearValue(!clearValue)
   }
 
