@@ -85,23 +85,6 @@ const Board = ({ clearValue }) => {
         else { }
     }
 
-    const handleSSLeave = (event, ci, ri) => {
-        if (clickingStart) {
-            if (event.target.className === 'stop-cell') { }
-            else {
-                event.target.className = 'cell'
-                event.target.style.backgroundColor = 'white'
-            }
-        }
-        else if (clickingStop) {
-            if (event.target.className === 'start-cell') { }
-            else {
-                event.target.className = 'cell'
-                event.target.style.backgroundColor = 'white'
-            }
-        }
-    }
-
     const handleCellClick = (event) => {
         if (event.target.style.backgroundColor === 'white') {
             event.target.style.backgroundColor = 'black'
@@ -134,7 +117,6 @@ const Board = ({ clearValue }) => {
                                                 setClickingStart(false)
                                                 setClickingStop(false)
                                             }}
-                                            onPointerOut={(event) => { handleSSLeave(event, ci, ri) }}
                                             onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
                                         >
                                         </td>)
@@ -153,7 +135,6 @@ const Board = ({ clearValue }) => {
                                                 setClickingStart(false)
                                                 setClickingStop(false)
                                             }}
-                                            onPointerOut={(event) => { handleSSLeave(event, ci, ri) }}
                                             onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
                                         >
                                         </td>)
@@ -174,7 +155,6 @@ const Board = ({ clearValue }) => {
                                                 setClickingStart(false)
                                                 setClickingStop(false)
                                             }}
-                                            onPointerOut={(event) => { handleSSLeave(event, ci, ri) }}
                                             onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
                                         >
                                         </td>)
