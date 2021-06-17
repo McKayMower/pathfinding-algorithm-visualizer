@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react'
 import '../css for components/Board.css'
 
 const Board = ({ clearValue, incomingMessage }) => {
-    
+
+    const boardHeight = 29
+    const boardWidth = 56
+
     const [board, setBoard] = useState([])
     const [clickingStart, setClickingStart] = useState(false)
     const [startCoordinates, setStartCoordinates] = useState({ row: 15, col: 14 })
@@ -11,6 +14,9 @@ const Board = ({ clearValue, incomingMessage }) => {
     const [clickingCell, setClickingCell] = useState(false)
     const [key, setKey] = useState(0)
     const [message, setMessage] = useState('')
+    const [canEdit, setCanEdit] = useState(true)
+    let finished = false
+    const DFSarray = []
 
     let style = {
         width: '25px',
@@ -35,7 +41,7 @@ const Board = ({ clearValue, incomingMessage }) => {
 
     //sets board on page loadup
     useEffect(() => {
-        setBoard(createBoard(29, 56))
+        setBoard(createBoard(boardHeight, boardWidth))
         setStopCoordinates({ row: 15, col: 42 })
         setStartCoordinates({ row: 15, col: 14 })
         setKey(prev => prev + 1)
@@ -43,7 +49,9 @@ const Board = ({ clearValue, incomingMessage }) => {
 
     useEffect(() => {
         if (incomingMessage === 'visualize') {
+            setCanEdit(false)
             handleAlgorithm()
+            setCanEdit(true)
         }
         else {
             setMessage(incomingMessage)
@@ -51,15 +59,37 @@ const Board = ({ clearValue, incomingMessage }) => {
     }, [incomingMessage])
 
     const handleDijkstras = () => {
-        console.log('handling dijkstras');
+        console.log('handling dijkstras')
+
     }
 
-    const handleDFS = () => {
-        console.log('handling dfs');
+    const handleDFS = (row, col) => {
+        console.log(`current row: ${row} current col: ${col}`);
+        if(row === stopCoordinates.row && col === stopCoordinates.col) {
+            console.log('reached stop coord')
+            finished = true
+            console.log(finished);
+        }
+        if (!finished && !board[row][col].visited) {
+            DFSarray.push({row, col})
+            board[row][col].visited = true
+            if (!finished && col + 1 < boardWidth) //right
+                handleDFS(row, col + 1)
+            if (!finished && row + 1 < boardHeight) //down
+                handleDFS(row + 1, col)
+            if (!finished && col - 1 > 0)
+                handleDFS(row, col - 1) //left
+            if (!finished && row - 1 > 0)
+                handleDFS(row - 1, col) //up
+        }
+    }
+
+    const visualizeDFS = () => {
+        console.log(DFSarray);
     }
 
     const handleBFS = () => {
-        console.log('handling bfs');
+        console.log('handling bfs')
     }
 
     const handleAlgorithm = () => {
@@ -68,7 +98,8 @@ const Board = ({ clearValue, incomingMessage }) => {
                 handleDijkstras()
                 break
             case 'depth-first':
-                handleDFS()
+                handleDFS(startCoordinates.row, startCoordinates.col)
+                visualizeDFS()
                 break
             case 'breadth-first':
                 handleBFS()
@@ -139,81 +170,111 @@ const Board = ({ clearValue, incomingMessage }) => {
         }
     }
 
-    return (
-        <table className='board' key={key}
-            onMouseLeave={() => {
-                setClickingCell(false)
-                setClickingStart(false)
-                setClickingStop(false)
-            }}>
-            <tbody>
-                {board.map((row, ri) => {
-                    return (
-                        <tr className='row' key={ri} >
-                            {row.map((col, ci) => {
-                                if (ri === startCoordinates.row && ci === startCoordinates.col) {
-                                    return (
-                                        <td className='start-cell' key={`${ri}-${ci}`} style={startStyle}
-                                            onDragStart={(event) => { event.preventDefault() }}
-                                            onPointerDown={() => {
-                                                setClickingStart(true)
-                                                setClickingCell(false)
-                                                setClickingStop(false)
-                                            }}
-                                            onPointerUp={() => {
-                                                setClickingCell(false)
-                                                setClickingStart(false)
-                                                setClickingStop(false)
-                                            }}
-                                            onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
-                                        >
-                                        </td>)
-                                }
-                                else if (ri === stopCoordinates.row && ci === stopCoordinates.col) {
-                                    return (
-                                        <td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}
-                                            onDragStart={(event) => { event.preventDefault() }}
-                                            onPointerDown={() => {
-                                                setClickingStop(true)
-                                                setClickingStart(false)
-                                                setClickingCell(false)
-                                            }}
-                                            onPointerUp={() => {
-                                                setClickingCell(false)
-                                                setClickingStart(false)
-                                                setClickingStop(false)
-                                            }}
-                                            onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
-                                        >
-                                        </td>)
+    if (canEdit) {
+        return (
+            <table className='board' key={key}
+                onMouseLeave={() => {
+                    setClickingCell(false)
+                    setClickingStart(false)
+                    setClickingStop(false)
+                }}>
+                <tbody>
+                    {board.map((row, ri) => {
+                        return (
+                            <tr className='row' key={ri} >
+                                {row.map((col, ci) => {
+                                    if (ri === startCoordinates.row && ci === startCoordinates.col) {
+                                        return (
+                                            <td className='start-cell' key={`${ri}-${ci}`} style={startStyle}
+                                                onDragStart={(event) => { event.preventDefault() }}
+                                                onPointerDown={() => {
+                                                    setClickingStart(true)
+                                                    setClickingCell(false)
+                                                    setClickingStop(false)
+                                                }}
+                                                onPointerUp={() => {
+                                                    setClickingCell(false)
+                                                    setClickingStart(false)
+                                                    setClickingStop(false)
+                                                }}
+                                                onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
+                                            >
+                                            </td>)
+                                    }
+                                    else if (ri === stopCoordinates.row && ci === stopCoordinates.col) {
+                                        return (
+                                            <td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}
+                                                onDragStart={(event) => { event.preventDefault() }}
+                                                onPointerDown={() => {
+                                                    setClickingStop(true)
+                                                    setClickingStart(false)
+                                                    setClickingCell(false)
+                                                }}
+                                                onPointerUp={() => {
+                                                    setClickingCell(false)
+                                                    setClickingStart(false)
+                                                    setClickingStop(false)
+                                                }}
+                                                onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
+                                            >
+                                            </td>)
 
-                                }
-                                else {
-                                    return (
-                                        <td className='cell' key={`${ri}-${ci}`} style={style}
-                                            onDragStart={(event) => { event.preventDefault() }}
-                                            onPointerDown={(event) => {
-                                                handleCellClick(event)
-                                                setClickingCell(true)
-                                                setClickingStart(false)
-                                                setClickingStop(false)
-                                            }}
-                                            onPointerUp={() => {
-                                                setClickingCell(false)
-                                                setClickingStart(false)
-                                                setClickingStop(false)
-                                            }}
-                                            onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
-                                        >
-                                        </td>)
-                                }
-                            })}
-                        </tr>
-                    )
-                })}
-            </tbody>
-        </table >
-    )
+                                    }
+                                    else {
+                                        return (
+                                            <td className='cell' key={`${ri}-${ci}`} style={style}
+                                                onDragStart={(event) => { event.preventDefault() }}
+                                                onPointerDown={(event) => {
+                                                    handleCellClick(event)
+                                                    setClickingCell(true)
+                                                    setClickingStart(false)
+                                                    setClickingStop(false)
+                                                }}
+                                                onPointerUp={() => {
+                                                    setClickingCell(false)
+                                                    setClickingStart(false)
+                                                    setClickingStop(false)
+                                                }}
+                                                onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}
+                                            >
+                                            </td>)
+                                    }
+                                })}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table >
+        )
+    }
+    else {
+        return (
+            <table className='board' key={key} onDragStart={(event)=>event.preventDefault()}>
+                <tbody>
+                    {board.map((row, ri) => {
+                        return (
+                            <tr className='row' key={ri} >
+                                {row.map((col, ci) => {
+                                    if (ri === startCoordinates.row && ci === startCoordinates.col) {
+                                        return (
+                                            <td className='start-cell' key={`${ri}-${ci}`} style={startStyle} ></td>)
+                                    }
+                                    else if (ri === stopCoordinates.row && ci === stopCoordinates.col) {
+                                        return (
+                                            <td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
+                                    }
+                                    else {
+                                        return (
+                                            <td className='cell' key={`${ri}-${ci}`} style={style}></td>)
+                                    }
+                                })}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table >
+        )
+    }
 
 }
 
