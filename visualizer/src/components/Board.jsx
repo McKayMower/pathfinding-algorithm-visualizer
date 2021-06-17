@@ -15,8 +15,9 @@ const Board = ({ clearValue, incomingMessage }) => {
     const [key, setKey] = useState(0)
     const [message, setMessage] = useState('')
     const [canEdit, setCanEdit] = useState(true)
+    //const [DFSarray, setDFSarray] = useState([])
+    let DFSarray = []
     let finished = false
-    const DFSarray = []
 
     let style = {
         width: '25px',
@@ -30,6 +31,14 @@ const Board = ({ clearValue, incomingMessage }) => {
         height: '25px',
         border: '0.5px solid black',
         backgroundColor: 'green',
+    }
+
+    let visualizeStyle = {
+        width: '25px',
+        height: '25px',
+        border: '0.5px solid black',
+        backgroundColor: 'blue',
+        transition: 'background-color 1s linear'
     }
 
     let stopStyle = {
@@ -60,32 +69,29 @@ const Board = ({ clearValue, incomingMessage }) => {
 
     const handleDijkstras = () => {
         console.log('handling dijkstras')
-
     }
 
     const handleDFS = (row, col) => {
-        console.log(`current row: ${row} current col: ${col}`);
-        if(row === stopCoordinates.row && col === stopCoordinates.col) {
-            console.log('reached stop coord')
+        if (row === stopCoordinates.row && col === stopCoordinates.col) {
             finished = true
-            console.log(finished);
         }
         if (!finished && !board[row][col].visited) {
-            DFSarray.push({row, col})
+            DFSarray.push({ row, col })
             board[row][col].visited = true
-            if (!finished && col + 1 < boardWidth) //right
+
+            if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall) //right
                 handleDFS(row, col + 1)
-            if (!finished && row + 1 < boardHeight) //down
+            if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall) //down
                 handleDFS(row + 1, col)
-            if (!finished && col - 1 > 0)
+            if (!finished && col - 1 >= 0 && !board[row][col - 1].cellWall)
                 handleDFS(row, col - 1) //left
-            if (!finished && row - 1 > 0)
+            if (!finished && row - 1 >= 0 && !board[row - 1][col].cellWall)
                 handleDFS(row - 1, col) //up
         }
     }
 
     const visualizeDFS = () => {
-        console.log(DFSarray);
+        setKey(prev => prev + 1)
     }
 
     const handleBFS = () => {
@@ -98,7 +104,15 @@ const Board = ({ clearValue, incomingMessage }) => {
                 handleDijkstras()
                 break
             case 'depth-first':
-                handleDFS(startCoordinates.row, startCoordinates.col)
+                //bottom right corner
+                if (startCoordinates.col + 1 > boardWidth && startCoordinates.row + 1 > boardHeight)
+                    handleDFS(startCoordinates.row, startCoordinates.col - 1)
+                //right side
+                else if (startCoordinates.col + 1 > boardWidth)
+                    handleDFS(startCoordinates.row + 1, startCoordinates.col)
+                else
+                    handleDFS(startCoordinates.row, startCoordinates.col + 1)
+
                 visualizeDFS()
                 break
             case 'breadth-first':
@@ -119,6 +133,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                     distance: Infinity,
                     prev: null,
                     cellWall: false,
+                    visualize: false,
                 })
             }
             board.push(col);
@@ -133,10 +148,12 @@ const Board = ({ clearValue, incomingMessage }) => {
                 if (event.target.style.backgroundColor === 'white') {
                     event.target.style.backgroundColor = 'black'
                     event.target.className = 'cell-wall'
+                    board[ri][ci].cellWall = true
                 }
                 else {
                     event.target.style.backgroundColor = 'white'
                     event.target.className = 'cell'
+                    board[ri][ci].cellWall = false
                 }
             }
         }
@@ -159,7 +176,7 @@ const Board = ({ clearValue, incomingMessage }) => {
         else { }
     }
 
-    const handleCellClick = (event) => {
+    const handleCellClick = (event, ri, ci) => {
         if (event.target.style.backgroundColor === 'white') {
             event.target.style.backgroundColor = 'black'
             event.target.className = 'cell-wall'
@@ -183,6 +200,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                         return (
                             <tr className='row' key={ri} >
                                 {row.map((col, ci) => {
+
                                     if (ri === startCoordinates.row && ci === startCoordinates.col) {
                                         return (
                                             <td className='start-cell' key={`${ri}-${ci}`} style={startStyle}
@@ -220,12 +238,14 @@ const Board = ({ clearValue, incomingMessage }) => {
                                             </td>)
 
                                     }
+                                    else if (board[ri][ci].visited)
+                                        return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
                                     else {
                                         return (
                                             <td className='cell' key={`${ri}-${ci}`} style={style}
                                                 onDragStart={(event) => { event.preventDefault() }}
                                                 onPointerDown={(event) => {
-                                                    handleCellClick(event)
+                                                    handleCellClick(event, ri, ci)
                                                     setClickingCell(true)
                                                     setClickingStart(false)
                                                     setClickingStop(false)
@@ -249,12 +269,13 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
     else {
         return (
-            <table className='board' key={key} onDragStart={(event)=>event.preventDefault()}>
+            <table className='board' key={key} onDragStart={(event) => event.preventDefault()}>
                 <tbody>
                     {board.map((row, ri) => {
                         return (
                             <tr className='row' key={ri} >
                                 {row.map((col, ci) => {
+
                                     if (ri === startCoordinates.row && ci === startCoordinates.col) {
                                         return (
                                             <td className='start-cell' key={`${ri}-${ci}`} style={startStyle} ></td>)
@@ -263,6 +284,8 @@ const Board = ({ clearValue, incomingMessage }) => {
                                         return (
                                             <td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
                                     }
+                                    else if (board[ri][ci].visited)
+                                        return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
                                     else {
                                         return (
                                             <td className='cell' key={`${ri}-${ci}`} style={style}></td>)
