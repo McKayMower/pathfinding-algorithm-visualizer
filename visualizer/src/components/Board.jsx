@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import '../css for components/Board.css'
 
 const Board = ({ clearValue, incomingMessage }) => {
-
+    
     const [board, setBoard] = useState([])
     const [clickingStart, setClickingStart] = useState(false)
     const [startCoordinates, setStartCoordinates] = useState({ row: 15, col: 14 })
@@ -43,12 +43,40 @@ const Board = ({ clearValue, incomingMessage }) => {
 
     useEffect(() => {
         if (incomingMessage === 'visualize') {
-            //message (from state) is algorithm
+            handleAlgorithm()
         }
         else {
             setMessage(incomingMessage)
         }
     }, [incomingMessage])
+
+    const handleDijkstras = () => {
+        console.log('handling dijkstras');
+    }
+
+    const handleDFS = () => {
+        console.log('handling dfs');
+    }
+
+    const handleBFS = () => {
+        console.log('handling bfs');
+    }
+
+    const handleAlgorithm = () => {
+        switch (message) {
+            case 'dijkstras':
+                handleDijkstras()
+                break
+            case 'depth-first':
+                handleDFS()
+                break
+            case 'breadth-first':
+                handleBFS()
+                break
+
+            default: return
+        }
+    }
 
     const createBoard = (rowCount, colCount) => {
         let board = [];
