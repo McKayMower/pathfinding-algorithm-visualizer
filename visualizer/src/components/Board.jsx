@@ -7,15 +7,15 @@ const Board = ({ clearValue, incomingMessage }) => {
     const boardWidth = 56
 
     const [board, setBoard] = useState([])
-    const [clickingStart, setClickingStart] = useState(false)
     const [startCoordinates, setStartCoordinates] = useState({ row: 15, col: 14 })
     const [stopCoordinates, setStopCoordinates] = useState({ row: 15, col: 42 })
+    const [clickingStart, setClickingStart] = useState(false)
     const [clickingStop, setClickingStop] = useState(false)
     const [clickingCell, setClickingCell] = useState(false)
     const [key, setKey] = useState(0)
-    const [message, setMessage] = useState('')
-    const [canEdit, setCanEdit] = useState(true)
-    //const [DFSarray, setDFSarray] = useState([])
+    const [algorithm, setAlgorithm] = useState('')
+    const [canDraw, setCanDraw] = useState(true)
+
     let DFSarray = []
     let finished = false
 
@@ -58,12 +58,12 @@ const Board = ({ clearValue, incomingMessage }) => {
 
     useEffect(() => {
         if (incomingMessage === 'visualize') {
-            setCanEdit(false)
+            setCanDraw(false)
             handleAlgorithm()
-            setCanEdit(true)
+            setCanDraw(true)
         }
         else {
-            setMessage(incomingMessage)
+            setAlgorithm(incomingMessage)
         }
     }, [incomingMessage])
 
@@ -78,7 +78,7 @@ const Board = ({ clearValue, incomingMessage }) => {
         if (!finished && !board[row][col].visited) {
             DFSarray.push({ row, col })
             board[row][col].visited = true
-
+            
             if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall) //right
                 handleDFS(row, col + 1)
             if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall) //down
@@ -90,30 +90,26 @@ const Board = ({ clearValue, incomingMessage }) => {
         }
     }
 
-    const visualizeDFS = () => {
-        setKey(prev => prev + 1)
-    }
-
     const handleBFS = () => {
         console.log('handling bfs')
     }
 
     const handleAlgorithm = () => {
-        switch (message) {
+        switch (algorithm) {
             case 'dijkstras':
                 handleDijkstras()
                 break
             case 'depth-first':
-                //bottom right corner
+                //bottom right corner start
                 if (startCoordinates.col + 1 > boardWidth && startCoordinates.row + 1 > boardHeight)
                     handleDFS(startCoordinates.row, startCoordinates.col - 1)
-                //right side
+                //furthest right side start
                 else if (startCoordinates.col + 1 > boardWidth)
                     handleDFS(startCoordinates.row + 1, startCoordinates.col)
                 else
                     handleDFS(startCoordinates.row, startCoordinates.col + 1)
 
-                visualizeDFS()
+                visualizeAlgorithm()
                 break
             case 'breadth-first':
                 handleBFS()
@@ -121,6 +117,10 @@ const Board = ({ clearValue, incomingMessage }) => {
 
             default: return
         }
+    }
+
+    const visualizeAlgorithm = () => {
+        setKey(prev => prev + 1)
     }
 
     const createBoard = (rowCount, colCount) => {
@@ -186,8 +186,8 @@ const Board = ({ clearValue, incomingMessage }) => {
             event.target.className = 'cell'
         }
     }
-
-    if (canEdit) {
+    
+    if (canDraw) {
         return (
             <table className='board' key={key}
                 onMouseLeave={() => {
@@ -275,21 +275,14 @@ const Board = ({ clearValue, incomingMessage }) => {
                         return (
                             <tr className='row' key={ri} >
                                 {row.map((col, ci) => {
-
-                                    if (ri === startCoordinates.row && ci === startCoordinates.col) {
-                                        return (
-                                            <td className='start-cell' key={`${ri}-${ci}`} style={startStyle} ></td>)
-                                    }
-                                    else if (ri === stopCoordinates.row && ci === stopCoordinates.col) {
-                                        return (
-                                            <td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
-                                    }
+                                    if (ri === startCoordinates.row && ci === startCoordinates.col) 
+                                        return (<td className='start-cell' key={`${ri}-${ci}`} style={startStyle} ></td>)
+                                    else if (ri === stopCoordinates.row && ci === stopCoordinates.col) 
+                                        return (<td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
                                     else if (board[ri][ci].visited)
                                         return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
-                                    else {
-                                        return (
-                                            <td className='cell' key={`${ri}-${ci}`} style={style}></td>)
-                                    }
+                                    else 
+                                        return (<td className='cell' key={`${ri}-${ci}`} style={style}></td>)
                                 })}
                             </tr>
                         )
@@ -297,6 +290,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                 </tbody>
             </table >
         )
+
     }
 
 }
