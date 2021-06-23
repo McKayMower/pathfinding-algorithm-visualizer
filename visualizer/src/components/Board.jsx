@@ -13,9 +13,11 @@ const Board = ({ clearValue, incomingMessage }) => {
     const [clickingStop, setClickingStop] = useState(false)
     const [clickingCell, setClickingCell] = useState(false)
     const [key, setKey] = useState(0)
-    const [algorithm, setAlgorithm] = useState('')
     const [canDraw, setCanDraw] = useState(true)
+    const [algorithm, setAlgorithm] = useState('')
     let finished = false
+
+    let traversed = []
 
     let style = {
         width: '25px',
@@ -36,6 +38,14 @@ const Board = ({ clearValue, incomingMessage }) => {
         height: '25px',
         border: '0.5px solid black',
         backgroundColor: 'green',
+    }
+
+    let testStyle = {
+        width: '25px',
+        height: '25px',
+        border: '0.5px solid black',
+        backgroundColor: '#2596be',
+        transition: 'background-color 1s linear'
     }
 
     let visualizeStyle = {
@@ -83,23 +93,25 @@ const Board = ({ clearValue, incomingMessage }) => {
         }
 
         if (!finished && !board[row][col].visited) {
-            if (!board[row][col].stop && !board[row][col].start)
+            if (!board[row][col].stop && !board[row][col].start) {
                 board[row][col].visited = true
+                traversed.push({ row, col })
+            }
 
             if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall && !board[row][col + 1].start && !board[row][col + 1].stop) { //right
-                console.log('right');
+                //console.log('right');
                 handleDFS(row, col + 1)
             }
             if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall && !board[row + 1][col].start && !board[row + 1][col].stop) { //down
-                console.log('down');
+                // console.log('down');
                 handleDFS(row + 1, col)
             }
             if (!finished && col - 1 >= 0 && !board[row][col - 1].cellWall && !board[row][col - 1].start && !board[row][col - 1].stop) { //left
-                console.log('left');
+                // console.log('left');
                 handleDFS(row, col - 1)
             }
             if (!finished && row - 1 >= 0 && !board[row - 1][col].cellWall && !board[row - 1][col].start && !board[row - 1][col].stop) { //up
-                console.log('up');
+                // console.log('up');
                 handleDFS(row - 1, col)
             }
         }
@@ -127,7 +139,18 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
 
     const visualizeAlgorithm = () => {
-        setKey(prev => prev + 1)
+
+        traversed.forEach((element,index) => {
+            setTimeout(() => {
+                //console.log(`${element.row},${element.col}`)
+
+                board[element.row][element.col].color = true
+                setKey(prev => prev + 1)
+
+            }, 75 * index)
+
+        });
+
     }
 
     const createBoard = (rowCount, colCount) => {
@@ -143,6 +166,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                     visualize: false,
                     start: false,
                     stop: false,
+                    color: false,
                 })
             }
             board.push(col);
@@ -257,8 +281,11 @@ const Board = ({ clearValue, incomingMessage }) => {
                                             </td>)
 
                                     }
-                                    else if (board[ri][ci].visited)
-                                        return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
+                                    else if (board[ri][ci].color) {
+                                        return (<td className='color' key={`${ri}-${ci}`} style={testStyle}></td>)
+                                    }
+                                    // else if (board[ri][ci].visited)
+                                    //     return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
                                     else if (board[ri][ci].cellWall) {
                                         return (<td className='cell-wall' key={`${ri}-${ci}`} style={wallStyle}
                                             onDragStart={(event) => { event.preventDefault() }}
@@ -314,8 +341,12 @@ const Board = ({ clearValue, incomingMessage }) => {
                                         return (<td className='start-cell' key={`${ri}-${ci}`} style={startStyle} ></td>)
                                     else if (ri === stopCoordinates.row && ci === stopCoordinates.col)
                                         return (<td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
-                                    else if (board[ri][ci].visited)
-                                        return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
+                                    else if (board[ri][ci].color) {
+                                        return (<td className='color' key={`${ri}-${ci}`} style={testStyle}></td>)
+                                    }
+                                    // else if (board[ri][ci].visited)
+                                    //     return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
+
                                     else if (board[ri][ci].cellWall)
                                         return (<td className='cell-wall' key={`${ri}-${ci}`} style={wallStyle}></td>)
                                     else
