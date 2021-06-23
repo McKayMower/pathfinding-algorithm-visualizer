@@ -18,6 +18,7 @@ const Board = ({ clearValue, incomingMessage }) => {
     let finished = false
 
     let traversed = []
+    let fifo = []
 
     let style = {
         width: '25px',
@@ -48,13 +49,13 @@ const Board = ({ clearValue, incomingMessage }) => {
         transition: 'background-color 1s linear'
     }
 
-    let visualizeStyle = {
-        width: '25px',
-        height: '25px',
-        border: '0.5px solid black',
-        backgroundColor: 'blue',
-        transition: 'background-color 1s linear'
-    }
+    // let visualizeStyle = {
+    //     width: '25px',
+    //     height: '25px',
+    //     border: '0.5px solid black',
+    //     backgroundColor: 'blue',
+    //     transition: 'background-color 1s linear'
+    // }
 
     let stopStyle = {
         width: '25px',
@@ -97,12 +98,11 @@ const Board = ({ clearValue, incomingMessage }) => {
                 board[row][col].visited = true
                 traversed.push({ row, col })
             }
-
-            if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall && !board[row][col + 1].start && !board[row][col + 1].stop) { //right
+            if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall && !board[row][col + 1].start) { //right
                 //console.log('right');
                 handleDFS(row, col + 1)
             }
-            if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall && !board[row + 1][col].start && !board[row + 1][col].stop) { //down
+            if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall && !board[row + 1][col].start) { //down
                 // console.log('down');
                 handleDFS(row + 1, col)
             }
@@ -117,8 +117,39 @@ const Board = ({ clearValue, incomingMessage }) => {
         }
     }
 
-    const handleBFS = () => {
-        console.log('handling bfs')
+    const handleBFS = (row, col) => {
+        board[row][col].visited = true
+        fifo.push({ row, col })
+        
+        while (!finished && fifo.length > 0) {
+            let curr = fifo.shift()
+            let crow = curr.row
+            let ccol = curr.col
+            traversed.push({row: crow, col: ccol})
+            if (crow === stopCoordinates.row && ccol === stopCoordinates.col) {
+                finished = true
+            }
+            if (ccol + 1 < boardWidth && !board[crow][ccol + 1].visited && !board[crow][ccol + 1].cellWall) { //right
+                let temp = ccol + 1
+                board[crow][ccol + 1].visited = true
+                fifo.push({row: crow, col: temp})
+            }
+            if (crow + 1 < boardHeight && !board[crow + 1][ccol].visited && !board[crow + 1][ccol].cellWall) { //down
+                let temp = crow + 1
+                board[crow + 1][ccol].visited = true
+                fifo.push({row: temp, col: ccol})
+            }
+            if (ccol - 1 >= 0 && !board[crow][ccol - 1].visited && !board[crow][ccol - 1].cellWall) { //left
+                let temp = ccol - 1
+                board[crow][ccol - 1].visited = true
+                fifo.push({row: crow, col: temp})
+            }
+            if (crow - 1 >=0 && !board[crow - 1][ccol].visited && !board[crow - 1][ccol].cellWall) { //up
+                let temp = crow - 1
+                board[crow - 1][ccol].visited = true
+                fifo.push({row: temp, col: ccol})
+            }
+        }
     }
 
     const handleAlgorithm = () => {
@@ -131,7 +162,8 @@ const Board = ({ clearValue, incomingMessage }) => {
                 visualizeAlgorithm()
                 break
             case 'breadth-first':
-                handleBFS()
+                handleBFS(startCoordinates.row, startCoordinates.col)
+                visualizeAlgorithm()
                 break
 
             default: return
@@ -140,17 +172,16 @@ const Board = ({ clearValue, incomingMessage }) => {
 
     const visualizeAlgorithm = () => {
 
-        traversed.forEach((element,index) => {
+        traversed.forEach((element, index) => {
             setTimeout(() => {
                 //console.log(`${element.row},${element.col}`)
-
                 board[element.row][element.col].color = true
                 setKey(prev => prev + 1)
-
             }, 75 * index)
-
         });
 
+        finished = false
+        traversed = []
     }
 
     const createBoard = (rowCount, colCount) => {
