@@ -53,6 +53,7 @@ const Header = ( {callBack} ) => {
             <button className='clear-button'
                 onClick={() => {
                     sendCallback('clear')
+                    setVisualizeString('Show Me!')
                 }}
                 >
                 Clear Board

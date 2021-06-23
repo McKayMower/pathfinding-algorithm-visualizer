@@ -1,7 +1,7 @@
 import './App.css';
 import Board from './components/Board'
 import Header from './components/Header'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
   const [clearValue, setClearValue] = useState(false)
@@ -14,6 +14,10 @@ function App() {
       setMessage(message)
     }
   }
+
+  useEffect(() => {
+    setMessage('')
+  }, [clearValue])
 
   return (
     <div className="App">
