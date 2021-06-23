@@ -87,15 +87,19 @@ const Board = ({ clearValue, incomingMessage }) => {
                 board[row][col].visited = true
 
             if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall && !board[row][col + 1].start && !board[row][col + 1].stop) { //right
+                console.log('right');
                 handleDFS(row, col + 1)
             }
             if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall && !board[row + 1][col].start && !board[row + 1][col].stop) { //down
+                console.log('down');
                 handleDFS(row + 1, col)
             }
             if (!finished && col - 1 >= 0 && !board[row][col - 1].cellWall && !board[row][col - 1].start && !board[row][col - 1].stop) { //left
+                console.log('left');
                 handleDFS(row, col - 1)
             }
             if (!finished && row - 1 >= 0 && !board[row - 1][col].cellWall && !board[row - 1][col].start && !board[row - 1][col].stop) { //up
+                console.log('up');
                 handleDFS(row - 1, col)
             }
         }
@@ -147,7 +151,7 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
 
     const handleMouseOver = (event, ci, ri) => {
-        if (clickingCell) {
+        if (clickingCell) { //clicking cell/cell wall
             if (event.target.className === 'start-cell' || event.target.className === 'stop-cell') { }
             else {
                 if (!board[ri][ci].cellWall) {
@@ -163,13 +167,14 @@ const Board = ({ clearValue, incomingMessage }) => {
             }
         }
         else if (clickingStart) {
-            console.log(startCoordinates);
             if (event.target.className === 'stop-cell') { }
             else {
                 event.target.style.backgroundColor = 'green'
                 event.target.className = 'start-cell'
+                board[startCoordinates.row][startCoordinates.col].start = false
                 setStartCoordinates({ row: ri, col: ci })
                 board[ri][ci].start = true
+                board[ri][ci].cellWall = false
             }
         }
         else if (clickingStop) {
@@ -177,8 +182,10 @@ const Board = ({ clearValue, incomingMessage }) => {
             else {
                 event.target.style.backgroundColor = 'red'
                 event.target.className = 'stop-cell'
+                board[stopCoordinates.row][stopCoordinates.col].stop = false
                 setStopCoordinates({ row: ri, col: ci })
                 board[ri][ci].stop = true
+                board[ri][ci].cellWall = false
             }
         }
     }
@@ -252,7 +259,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                     }
                                     else if (board[ri][ci].visited)
                                         return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
-                                    else if (board[ri][ci].cellWall)
+                                    else if (board[ri][ci].cellWall) {
                                         return (<td className='cell-wall' key={`${ri}-${ci}`} style={wallStyle}
                                             onDragStart={(event) => { event.preventDefault() }}
                                             onPointerDown={(event) => {
@@ -268,6 +275,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                             }}
                                             onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}>
                                         </td>)
+                                    }
                                     else {
                                         return (
                                             <td className='cell' key={`${ri}-${ci}`} style={style}
@@ -319,9 +327,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                 </tbody>
             </table >
         )
-
     }
-
 }
 
 export default Board
