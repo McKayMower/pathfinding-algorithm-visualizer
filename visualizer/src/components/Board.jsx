@@ -15,7 +15,6 @@ const Board = ({ clearValue, incomingMessage }) => {
     const [key, setKey] = useState(0)
     const [algorithm, setAlgorithm] = useState('')
     const [canDraw, setCanDraw] = useState(true)
-
     let DFSarray = []
     let finished = false
 
@@ -48,7 +47,7 @@ const Board = ({ clearValue, incomingMessage }) => {
         backgroundColor: 'red',
     }
 
-    //sets board on page loadup
+    //sets board on page loadup and when clear board is pressed
     useEffect(() => {
         setBoard(createBoard(boardHeight, boardWidth))
         setStopCoordinates({ row: 15, col: 42 })
@@ -72,13 +71,14 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
 
     const handleDFS = (row, col) => {
+
         if (row === stopCoordinates.row && col === stopCoordinates.col) {
             finished = true
         }
         if (!finished && !board[row][col].visited) {
             DFSarray.push({ row, col })
             board[row][col].visited = true
-            
+
             if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall) //right
                 handleDFS(row, col + 1)
             if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall) //down
@@ -173,7 +173,6 @@ const Board = ({ clearValue, incomingMessage }) => {
                 setStopCoordinates({ row: ri, col: ci })
             }
         }
-        else { }
     }
 
     const handleCellClick = (event, ri, ci) => {
@@ -186,7 +185,7 @@ const Board = ({ clearValue, incomingMessage }) => {
             event.target.className = 'cell'
         }
     }
-    
+
     if (canDraw) {
         return (
             <table className='board' key={key}
@@ -200,7 +199,6 @@ const Board = ({ clearValue, incomingMessage }) => {
                         return (
                             <tr className='row' key={ri} >
                                 {row.map((col, ci) => {
-
                                     if (ri === startCoordinates.row && ci === startCoordinates.col) {
                                         return (
                                             <td className='start-cell' key={`${ri}-${ci}`} style={startStyle}
@@ -239,7 +237,7 @@ const Board = ({ clearValue, incomingMessage }) => {
 
                                     }
                                     else if (board[ri][ci].visited)
-                                        return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
+                                        return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}>{board[ri][ci].value}</td>)
                                     else {
                                         return (
                                             <td className='cell' key={`${ri}-${ci}`} style={style}
@@ -275,13 +273,13 @@ const Board = ({ clearValue, incomingMessage }) => {
                         return (
                             <tr className='row' key={ri} >
                                 {row.map((col, ci) => {
-                                    if (ri === startCoordinates.row && ci === startCoordinates.col) 
+                                    if (ri === startCoordinates.row && ci === startCoordinates.col)
                                         return (<td className='start-cell' key={`${ri}-${ci}`} style={startStyle} ></td>)
-                                    else if (ri === stopCoordinates.row && ci === stopCoordinates.col) 
+                                    else if (ri === stopCoordinates.row && ci === stopCoordinates.col)
                                         return (<td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
                                     else if (board[ri][ci].visited)
                                         return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
-                                    else 
+                                    else
                                         return (<td className='cell' key={`${ri}-${ci}`} style={style}></td>)
                                 })}
                             </tr>

@@ -13,7 +13,7 @@ const Header = ( {callBack} ) => {
 
     const [showMenu, setShowMenu] = useState(false)
     const [visualizeString, setVisualizeString] = useState('Show Me!')
-    
+
     return (
         <div className='header-container'>
             <h1 className='title' 
