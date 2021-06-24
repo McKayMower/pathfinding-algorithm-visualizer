@@ -16,6 +16,7 @@ const Board = ({ clearValue, incomingMessage }) => {
     const [canDraw, setCanDraw] = useState(true)
     const [algorithm, setAlgorithm] = useState('')
     let finished = false
+    
 
     let traversed = []
     let fifo = []
@@ -98,20 +99,20 @@ const Board = ({ clearValue, incomingMessage }) => {
                 board[row][col].visited = true
                 traversed.push({ row, col })
             }
-            if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall && !board[row][col + 1].start) { //right
-                //console.log('right');
+            if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall && !board[row][col + 1].start && !board[row][col + 1].visited) { //right
+                //console.log(`right ${row} ${col}`);
                 handleDFS(row, col + 1)
             }
-            if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall && !board[row + 1][col].start) { //down
-                // console.log('down');
+            if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall && !board[row + 1][col].start && !board[row + 1][col].visited) { //down
+                //console.log(`down ${row} ${col}`);
                 handleDFS(row + 1, col)
             }
-            if (!finished && col - 1 >= 0 && !board[row][col - 1].cellWall && !board[row][col - 1].start && !board[row][col - 1].stop) { //left
-                // console.log('left');
+            if (!finished && col - 1 >= 0 && !board[row][col - 1].cellWall && !board[row][col - 1].start && !board[row][col - 1].visited) { //left
+                //console.log(`left ${row} ${col}`);
                 handleDFS(row, col - 1)
             }
-            if (!finished && row - 1 >= 0 && !board[row - 1][col].cellWall && !board[row - 1][col].start && !board[row - 1][col].stop) { //up
-                // console.log('up');
+            if (!finished && row - 1 >= 0 && !board[row - 1][col].cellWall && !board[row - 1][col].start && !board[row - 1][col].visited) { //up
+                //console.log(`up ${row} ${col}`);
                 handleDFS(row - 1, col)
             }
         }
@@ -120,34 +121,34 @@ const Board = ({ clearValue, incomingMessage }) => {
     const handleBFS = (row, col) => {
         board[row][col].visited = true
         fifo.push({ row, col })
-        
+
         while (!finished && fifo.length > 0) {
             let curr = fifo.shift()
             let crow = curr.row
             let ccol = curr.col
-            traversed.push({row: crow, col: ccol})
+            traversed.push({ row: crow, col: ccol })
             if (crow === stopCoordinates.row && ccol === stopCoordinates.col) {
                 finished = true
             }
             if (ccol + 1 < boardWidth && !board[crow][ccol + 1].visited && !board[crow][ccol + 1].cellWall) { //right
                 let temp = ccol + 1
                 board[crow][ccol + 1].visited = true
-                fifo.push({row: crow, col: temp})
+                fifo.push({ row: crow, col: temp })
             }
             if (crow + 1 < boardHeight && !board[crow + 1][ccol].visited && !board[crow + 1][ccol].cellWall) { //down
                 let temp = crow + 1
                 board[crow + 1][ccol].visited = true
-                fifo.push({row: temp, col: ccol})
+                fifo.push({ row: temp, col: ccol })
             }
             if (ccol - 1 >= 0 && !board[crow][ccol - 1].visited && !board[crow][ccol - 1].cellWall) { //left
                 let temp = ccol - 1
                 board[crow][ccol - 1].visited = true
-                fifo.push({row: crow, col: temp})
+                fifo.push({ row: crow, col: temp })
             }
-            if (crow - 1 >=0 && !board[crow - 1][ccol].visited && !board[crow - 1][ccol].cellWall) { //up
+            if (crow - 1 >= 0 && !board[crow - 1][ccol].visited && !board[crow - 1][ccol].cellWall) { //up
                 let temp = crow - 1
                 board[crow - 1][ccol].visited = true
-                fifo.push({row: temp, col: ccol})
+                fifo.push({ row: temp, col: ccol })
             }
         }
     }
@@ -171,9 +172,9 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
 
     const visualizeAlgorithm = () => {
-
         traversed.forEach((element, index) => {
             setTimeout(() => {
+                //console.log('visualizing');
                 //console.log(`${element.row},${element.col}`)
                 board[element.row][element.col].color = true
                 setKey(prev => prev + 1)
@@ -182,6 +183,7 @@ const Board = ({ clearValue, incomingMessage }) => {
 
         finished = false
         traversed = []
+        fifo = []
     }
 
     const createBoard = (rowCount, colCount) => {
@@ -249,17 +251,15 @@ const Board = ({ clearValue, incomingMessage }) => {
         if (event.target.style.backgroundColor === 'black') {
             event.target.style.backgroundColor = 'white'
             event.target.className = 'cell'
-            board[ri][ci].start = false
-            board[ri][ci].stop = false
             board[ri][ci].cellWall = false
         }
         else {
             event.target.style.backgroundColor = 'black'
             event.target.className = 'cell-wall'
             board[ri][ci].cellWall = true
-            board[ri][ci].start = false
-            board[ri][ci].stop = false
         }
+        board[ri][ci].start = false
+        board[ri][ci].stop = false
     }
 
     if (canDraw) {
@@ -351,6 +351,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                                 }}
                                                 onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}>
                                             </td>)
+                                        
                                     }
                                 })}
                             </tr>
@@ -373,7 +374,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                     else if (ri === stopCoordinates.row && ci === stopCoordinates.col)
                                         return (<td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
                                     else if (board[ri][ci].color) {
-                                        return (<td className='color' key={`${ri}-${ci}`} style={testStyle}></td>)
+                                        return (<td className='color' key={`${board[ri][ci].something}${ri}-${ci}`} style={testStyle}></td>)
                                     }
                                     // else if (board[ri][ci].visited)
                                     //     return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
@@ -381,7 +382,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                     else if (board[ri][ci].cellWall)
                                         return (<td className='cell-wall' key={`${ri}-${ci}`} style={wallStyle}></td>)
                                     else
-                                        return (<td className='cell' key={`${ri}-${ci}`} style={style}></td>)
+                                        return (<td className='cell' key={`${board[ri][ci].something}${ri}-${ci}`} style={style}>{key}</td>)
                                 })}
                             </tr>
                         )
