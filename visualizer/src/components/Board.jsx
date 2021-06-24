@@ -15,6 +15,7 @@ const Board = ({ clearValue, incomingMessage }) => {
     const [key, setKey] = useState(0)
     const [canDraw, setCanDraw] = useState(true)
     const [algorithm, setAlgorithm] = useState('')
+    const [visualizeInter, setVisualizeInter] = useState()
     let finished = false
     
 
@@ -71,7 +72,9 @@ const Board = ({ clearValue, incomingMessage }) => {
         setStopCoordinates({ row: 15, col: 42 })
         setStartCoordinates({ row: 15, col: 14 })
         setKey(prev => prev + 1)
+        clearInterval(visualizeInter)
     }, [clearValue])
+
 
     useEffect(() => {
         if (incomingMessage === 'visualize') {
@@ -172,17 +175,32 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
 
     const visualizeAlgorithm = () => {
-        traversed.forEach((element, index) => {
-            setTimeout(() => {
-                //console.log('visualizing');
-                //console.log(`${element.row},${element.col}`)
-                board[element.row][element.col].color = true
-                setKey(prev => prev + 1)
-            }, 75 * index)
-        });
+        // traversed.forEach((element, index) => {
+        //     let interval = setInterval(() => {
+        //         if(temp !== clearValue) {
+        //             console.log("stopping");
+        //             clearInterval(interval)
+        //             return
+        //         }
+        //         console.log(clearValue);
+        //         //console.log(`${element.row},${element.col}`)
+        //         board[element.row][element.col].color = true
+        //         setKey(prev => prev + 1)
+        //     }, 75)
+        // });
+
+
+        setVisualizeInter(setInterval(() => {
+            let element = traversed.shift()
+            board[element.row][element.col].color = true
+            setKey(prev => prev + 1)
+            if(traversed.length === 0) {
+                clearInterval(visualizeInter);
+            }
+        }, 75))
 
         finished = false
-        traversed = []
+        //traversed = []
         fifo = []
     }
 
