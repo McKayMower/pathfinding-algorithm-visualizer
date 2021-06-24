@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import '../css for components/Board.css'
+import PriorityQueue from 'js-priority-queue'
 
 const Board = ({ clearValue, incomingMessage }) => {
 
@@ -17,11 +18,9 @@ const Board = ({ clearValue, incomingMessage }) => {
     const [algorithm, setAlgorithm] = useState('')
     const [visualizeInter, setVisualizeInter] = useState()
     let finished = false
-    
-
     let traversed = []
     let fifo = []
-
+    
     let style = {
         width: '25px',
         height: '25px',
@@ -87,8 +86,43 @@ const Board = ({ clearValue, incomingMessage }) => {
         }
     }, [incomingMessage])
 
+    const createBoard = (rowCount, colCount) => {
+        let board = [];
+        for (let x = 0; x < rowCount; x++) {
+            let col = [];
+            for (let y = 0; y < colCount; y++) {
+                col.push({
+                    visited: false,
+                    distance: 100,
+                    prev: null,
+                    cellWall: false,
+                    visualize: false,
+                    start: false,
+                    stop: false,
+                    color: false,
+                })
+            }
+            board.push(col);
+        }
+        return board
+    }
+
     const handleDijkstras = () => {
-        console.log('handling dijkstras')
+        board[startCoordinates.row][startCoordinates.col].distance = 0
+        var queue = new PriorityQueue({comparator: function(a,b) {
+            return a.distance - b.distance
+        }});
+
+        board.forEach((row, ri) => {
+            row.forEach((col, ci) => {
+                queue.queue(board[ri][ci])
+            })
+        })
+        while(queue.length) {
+            let curr = queue.dequeue()
+            //foreach neighbor (up,down,left,right) of curr
+            
+        }
     }
 
     const handleDFS = (row, col) => {
@@ -160,6 +194,8 @@ const Board = ({ clearValue, incomingMessage }) => {
         switch (algorithm) {
             case 'dijkstras':
                 handleDijkstras()
+                //visualizeAlgorithm()
+                //showPath()
                 break
             case 'depth-first':
                 handleDFS(startCoordinates.row, startCoordinates.col)
@@ -172,6 +208,10 @@ const Board = ({ clearValue, incomingMessage }) => {
 
             default: return
         }
+    }
+
+    const showPath = () => {
+        console.log('show path here');
     }
 
     const visualizeAlgorithm = () => {
@@ -189,12 +229,11 @@ const Board = ({ clearValue, incomingMessage }) => {
         //     }, 75)
         // });
 
-
         setVisualizeInter(setInterval(() => {
             let element = traversed.shift()
             board[element.row][element.col].color = true
             setKey(prev => prev + 1)
-            if(traversed.length === 0) {
+            if (traversed.length === 0) {
                 clearInterval(visualizeInter);
             }
         }, 75))
@@ -202,27 +241,6 @@ const Board = ({ clearValue, incomingMessage }) => {
         finished = false
         //traversed = []
         fifo = []
-    }
-
-    const createBoard = (rowCount, colCount) => {
-        let board = [];
-        for (let x = 0; x < rowCount; x++) {
-            let col = [];
-            for (let y = 0; y < colCount; y++) {
-                col.push({
-                    visited: false,
-                    distance: Infinity,
-                    prev: null,
-                    cellWall: false,
-                    visualize: false,
-                    start: false,
-                    stop: false,
-                    color: false,
-                })
-            }
-            board.push(col);
-        }
-        return board
     }
 
     const handleMouseOver = (event, ci, ri) => {
@@ -369,7 +387,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                                 }}
                                                 onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}>
                                             </td>)
-                                        
+
                                     }
                                 })}
                             </tr>
