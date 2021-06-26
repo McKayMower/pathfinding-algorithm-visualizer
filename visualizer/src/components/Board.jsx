@@ -43,21 +43,13 @@ const Board = ({ clearValue, incomingMessage }) => {
         backgroundColor: 'green',
     }
 
-    let testStyle = {
+    let findingStyle = {
         width: '25px',
         height: '25px',
         border: '0.5px solid black',
         backgroundColor: '#2596be',
         transition: 'background-color 1s linear'
     }
-
-    // let visualizeStyle = {
-    //     width: '25px',
-    //     height: '25px',
-    //     border: '0.5px solid black',
-    //     backgroundColor: 'blue',
-    //     transition: 'background-color 1s linear'
-    // }
 
     let stopStyle = {
         width: '25px',
@@ -100,7 +92,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                     visualize: false,
                     start: false,
                     stop: false,
-                    color: false,
+                    finding: false,
                 })
             }
             board.push(col);
@@ -218,7 +210,7 @@ const Board = ({ clearValue, incomingMessage }) => {
     const visualizeAlgorithm = () => {
         interStop = setInterval(() => {
             let element = traversed.shift()
-            board[element.row][element.col].color = true
+            board[element.row][element.col].finding = true
             setKey(prev => prev + 1)
             if (traversed.length === 0) {
                 clearInterval(interStop);
@@ -335,8 +327,8 @@ const Board = ({ clearValue, incomingMessage }) => {
                                             </td>)
 
                                     }
-                                    else if (board[ri][ci].color) {
-                                        return (<td className='color' key={`${ri}-${ci}`} style={testStyle}></td>)
+                                    else if (board[ri][ci].finding) {
+                                        return (<td className='finding' key={`${ri}-${ci}`} style={findingStyle}></td>)
                                     }
                                     // else if (board[ri][ci].visited)
                                     //     return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
@@ -396,8 +388,8 @@ const Board = ({ clearValue, incomingMessage }) => {
                                         return (<td className='start-cell' key={`${ri}-${ci}`} style={startStyle} ></td>)
                                     else if (ri === stopCoordinates.row && ci === stopCoordinates.col)
                                         return (<td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
-                                    else if (board[ri][ci].color) {
-                                        return (<td className='color' key={`${board[ri][ci].something}${ri}-${ci}`} style={testStyle}></td>)
+                                    else if (board[ri][ci].finding) {
+                                        return (<td className='finding' key={`${board[ri][ci].something}${ri}-${ci}`} style={findingStyle}></td>)
                                     }
                                     // else if (board[ri][ci].visited)
                                     //     return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
