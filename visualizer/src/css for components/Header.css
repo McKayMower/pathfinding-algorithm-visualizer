@@ -26,7 +26,18 @@
     background-color: #fc6c58;
     padding-bottom: 5px;
 }
+.header-container .slider {
+    display: inline-block;
+    width: 300px;
+    margin-left: 2.5px;
+    margin-right: 2.5px;
+}
 
+.header-container .slider2 {
+    visibility: hidden;
+    width: 300px;
+    display: inline-block;
+}
 .header-container button {
     text-align: center;
     cursor: pointer;

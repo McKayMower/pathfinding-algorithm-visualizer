@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import '../css for components/Board.css'
 import PriorityQueue from 'js-priority-queue'
 
-const Board = ({ clearValue, incomingMessage }) => {
+const Board = ({ clearValue, incomingMessage, speed }) => {
 
     const boardHeight = 29
     const boardWidth = 56
@@ -264,7 +264,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                 setCanDraw(true)
                 clearInterval(interStop)
             }
-        }, 3)
+        }, speed)
     }
 
     const visualizeAlgorithm = () => {
@@ -279,7 +279,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                 if (algorithm === 'dijkstras')
                     showPath()
             }
-        }, 3)
+        }, speed)
 
         finished = false
         fifo = []
