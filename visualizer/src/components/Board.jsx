@@ -48,7 +48,7 @@ const Board = ({ clearValue, incomingMessage }) => {
         height: '25px',
         border: '0.5px solid black',
         backgroundColor: '#2596be',
-        transition: 'background-color 1s linear'
+        transition: 'background-color .2s linear'
     }
 
     let stopStyle = {
@@ -93,6 +93,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                     start: false,
                     stop: false,
                     finding: false,
+                    key: `${x},${y}`
                 })
             }
             board.push(col);
@@ -279,7 +280,7 @@ const Board = ({ clearValue, incomingMessage }) => {
 
     if (canDraw) {
         return (
-            <table className='board' key={key}
+            <table className='board' key={'board'}
                 onMouseLeave={() => {
                     setClickingCell(false)
                     setClickingStart(false)
@@ -292,7 +293,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                 {row.map((col, ci) => {
                                     if (ri === startCoordinates.row && ci === startCoordinates.col) {
                                         return (
-                                            <td className='start-cell' key={`${ri}-${ci}`} style={startStyle}
+                                            <td className='start-cell' key={board[ri][ci].key} style={startStyle}
                                                 onDragStart={(event) => { event.preventDefault() }}
                                                 onPointerDown={() => {
                                                     setClickingStart(true)
@@ -310,7 +311,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                     }
                                     else if (ri === stopCoordinates.row && ci === stopCoordinates.col) {
                                         return (
-                                            <td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}
+                                            <td className='stop-cell' key={board[ri][ci].key} style={stopStyle}
                                                 onDragStart={(event) => { event.preventDefault() }}
                                                 onPointerDown={() => {
                                                     setClickingStop(true)
@@ -328,12 +329,12 @@ const Board = ({ clearValue, incomingMessage }) => {
 
                                     }
                                     else if (board[ri][ci].finding) {
-                                        return (<td className='finding' key={`${ri}-${ci}`} style={findingStyle}></td>)
+                                        return (<td className='finding' key={board[ri][ci].key} style={findingStyle}></td>)
                                     }
                                     // else if (board[ri][ci].visited)
                                     //     return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
                                     else if (board[ri][ci].cellWall) {
-                                        return (<td className='cell-wall' key={`${ri}-${ci}`} style={wallStyle}
+                                        return (<td className='cell-wall' key={board[ri][ci].key} style={wallStyle}
                                             onDragStart={(event) => { event.preventDefault() }}
                                             onPointerDown={(event) => {
                                                 handleCellClick(event, ri, ci)
@@ -351,7 +352,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                     }
                                     else {
                                         return (
-                                            <td className='cell' key={`${ri}-${ci}`} style={style}
+                                            <td className='cell' key={board[ri][ci].key} style={style}
                                                 onDragStart={(event) => { event.preventDefault() }}
                                                 onPointerDown={(event) => {
                                                     handleCellClick(event, ri, ci)
@@ -378,26 +379,26 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
     else {
         return (
-            <table className='board' key={key} onDragStart={(event) => event.preventDefault()}>
+            <table className='board' key={'board'} onDragStart={(event) => event.preventDefault()}>
                 <tbody>
                     {board.map((row, ri) => {
                         return (
                             <tr className='row' key={ri} >
                                 {row.map((col, ci) => {
                                     if (ri === startCoordinates.row && ci === startCoordinates.col)
-                                        return (<td className='start-cell' key={`${ri}-${ci}`} style={startStyle} ></td>)
+                                        return (<td className='start-cell' key={board[ri][ci].key} style={startStyle} ></td>)
                                     else if (ri === stopCoordinates.row && ci === stopCoordinates.col)
-                                        return (<td className='stop-cell' key={`${ri}-${ci}`} style={stopStyle}></td>)
+                                        return (<td className='stop-cell' key={board[ri][ci].key} style={stopStyle}></td>)
                                     else if (board[ri][ci].finding) {
-                                        return (<td className='finding' key={`${board[ri][ci].something}${ri}-${ci}`} style={findingStyle}></td>)
+                                        return (<td className='finding' key={board[ri][ci].key} style={findingStyle}></td>)
                                     }
                                     // else if (board[ri][ci].visited)
                                     //     return (<td className='visited' key={`${ri}-${ci}`} style={visualizeStyle}></td>)
 
                                     else if (board[ri][ci].cellWall)
-                                        return (<td className='cell-wall' key={`${ri}-${ci}`} style={wallStyle}></td>)
+                                        return (<td className='cell-wall' key={board[ri][ci].key} style={wallStyle}></td>)
                                     else
-                                        return (<td className='cell' key={`${board[ri][ci].something}${ri}-${ci}`} style={style}>{key}</td>)
+                                        return (<td className='cell' key={board[ri][ci].key} style={style}></td>)
                                 })}
                             </tr>
                         )
