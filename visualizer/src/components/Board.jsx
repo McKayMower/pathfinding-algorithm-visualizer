@@ -357,6 +357,7 @@ const Board = ({ clearValue, incomingMessage }) => {
                                 {row.map((col, ci) => {
                                     if (ri === startCoordinates.row && ci === startCoordinates.col) {
                                         board[ri][ci].start = true
+                                        board[ri][ci].distance = 0
                                         return (
                                             <td className='start-cell' key={`${ri},${ci}`} style={startStyle}
                                                 onDragStart={(event) => { event.preventDefault() }}
