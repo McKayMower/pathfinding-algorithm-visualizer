@@ -16,7 +16,8 @@ const Board = ({ clearValue, incomingMessage }) => {
     const [key, setKey] = useState(0)
     const [canDraw, setCanDraw] = useState(true)
     const [algorithm, setAlgorithm] = useState('')
-    const [visualizeInter, setVisualizeInter] = useState()
+
+    let interStop = 0
     let finished = false
     let traversed = []
     let fifo = []
@@ -71,7 +72,7 @@ const Board = ({ clearValue, incomingMessage }) => {
         setStopCoordinates({ row: 15, col: 42 })
         setStartCoordinates({ row: 15, col: 14 })
         setKey(prev => prev + 1)
-        clearInterval(visualizeInter)
+        clearInterval(interStop)
     }, [clearValue])
 
 
@@ -215,28 +216,14 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
 
     const visualizeAlgorithm = () => {
-        // traversed.forEach((element, index) => {
-        //     let interval = setInterval(() => {
-        //         if(temp !== clearValue) {
-        //             console.log("stopping");
-        //             clearInterval(interval)
-        //             return
-        //         }
-        //         console.log(clearValue);
-        //         //console.log(`${element.row},${element.col}`)
-        //         board[element.row][element.col].color = true
-        //         setKey(prev => prev + 1)
-        //     }, 75)
-        // });
-
-        setVisualizeInter(setInterval(() => {
+        interStop = setInterval(() => {
             let element = traversed.shift()
             board[element.row][element.col].color = true
             setKey(prev => prev + 1)
             if (traversed.length === 0) {
-                clearInterval(visualizeInter);
+                clearInterval(interStop);
             }
-        }, 75))
+        }, 75)
 
         finished = false
         //traversed = []
