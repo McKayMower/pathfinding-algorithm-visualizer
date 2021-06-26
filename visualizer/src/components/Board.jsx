@@ -65,6 +65,7 @@ const Board = ({ clearValue, incomingMessage }) => {
         setStartCoordinates({ row: 15, col: 14 })
         setKey(prev => prev + 1)
         clearInterval(interStop)
+        setCanDraw(true)
     }, [clearValue])
 
 
@@ -72,7 +73,7 @@ const Board = ({ clearValue, incomingMessage }) => {
         if (incomingMessage === 'visualize') {
             setCanDraw(false)
             handleAlgorithm()
-            setCanDraw(true)
+            //Must call setCanDraw to true immediately before finishing the visualization
         }
         else {
             setAlgorithm(incomingMessage)
@@ -214,9 +215,10 @@ const Board = ({ clearValue, incomingMessage }) => {
             board[element.row][element.col].finding = true
             setKey(prev => prev + 1)
             if (traversed.length === 0) {
+                setCanDraw(true)
                 clearInterval(interStop);
             }
-        }, 75)
+        }, 3)
 
         finished = false
         //traversed = []
