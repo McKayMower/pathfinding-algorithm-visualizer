@@ -131,7 +131,6 @@ const Board = ({ clearValue, incomingMessage }) => {
             }
             //right
             if (curr.col + 1 < boardWidth && !board[curr.row][curr.col + 1].cellWall && !board[curr.row][curr.col + 1].start && !board[curr.row][curr.col + 1].visited) {
-                console.log("right");
                 board[curr.row][curr.col].visited = true
                 let tempDistance = curr.distance + 1
                 if (tempDistance < board[curr.row][curr.col + 1].distance) {
@@ -142,7 +141,6 @@ const Board = ({ clearValue, incomingMessage }) => {
             }
             //down
             if (curr.row + 1 < boardHeight && !board[curr.row + 1][curr.col].cellWall && !board[curr.row + 1][curr.col].start && !board[curr.row + 1][curr.col].visited) {
-                console.log("down");
                 board[curr.row][curr.col].visited = true
                 let tempDistance = curr.distance + 1
                 if (tempDistance < board[curr.row + 1][curr.col].distance) {
@@ -153,13 +151,9 @@ const Board = ({ clearValue, incomingMessage }) => {
             }
             //left
             if (curr.col - 1 >= 0 && !board[curr.row][curr.col - 1].cellWall && !board[curr.row][curr.col - 1].start && !board[curr.row][curr.col - 1].visited) {
-                console.log("left");
                 board[curr.row][curr.col].visited = true
                 let tempDistance = curr.distance + 1
-                console.log(`left temp distance: ${tempDistance}`);
-                console.log(`board distance: ${board[curr.row][curr.col - 1].distance}`);
                 if (tempDistance < board[curr.row][curr.col - 1].distance) {
-                    console.log("pushing left");
                     board[curr.row][curr.col - 1].distance = tempDistance
                     board[curr.row][curr.col - 1].prev = { row: curr.row, col: curr.col }
                     queue.queue(board[curr.row][curr.col - 1])
@@ -167,7 +161,6 @@ const Board = ({ clearValue, incomingMessage }) => {
             }
             //up
             if (curr.row - 1 >= 0 && !board[curr.row - 1][curr.col].cellWall && !board[curr.row - 1][curr.col].start && !board[curr.row - 1][curr.col].visited) {
-                console.log("up");
                 board[curr.row][curr.col].visited = true
                 let tempDistance = curr.distance + 1
                 if (tempDistance < board[curr.row - 1][curr.col].distance) {
@@ -191,19 +184,15 @@ const Board = ({ clearValue, incomingMessage }) => {
                 traversed.push({ row, col })
             }
             if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall && !board[row][col + 1].start && !board[row][col + 1].visited) { //right
-                //console.log(`right ${row} ${col}`);
                 handleDFS(row, col + 1)
             }
             if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall && !board[row + 1][col].start && !board[row + 1][col].visited) { //down
-                //console.log(`down ${row} ${col}`);
                 handleDFS(row + 1, col)
             }
             if (!finished && col - 1 >= 0 && !board[row][col - 1].cellWall && !board[row][col - 1].start && !board[row][col - 1].visited) { //left
-                //console.log(`left ${row} ${col}`);
                 handleDFS(row, col - 1)
             }
             if (!finished && row - 1 >= 0 && !board[row - 1][col].cellWall && !board[row - 1][col].start && !board[row - 1][col].visited) { //up
-                //console.log(`up ${row} ${col}`);
                 handleDFS(row - 1, col)
             }
         }
@@ -264,7 +253,6 @@ const Board = ({ clearValue, incomingMessage }) => {
     }
 
     const showPath = () => {
-        console.log(board);
         let curr = board[stopCoordinates.row][stopCoordinates.col]
         interStop = setInterval(() => {
             if (curr.prev !== null) {
@@ -275,7 +263,6 @@ const Board = ({ clearValue, incomingMessage }) => {
             else {
                 setCanDraw(true)
                 clearInterval(interStop)
-                console.log('274: cleared interval');
             }
         }, 3)
     }
