@@ -4,29 +4,44 @@ import Header from './components/Header'
 import { useState, useEffect } from 'react'
 
 function App() {
-  const [clearValue, setClearValue] = useState(false)
-  const [message, setMessage] = useState('')
-  const [speed, setSpeed] = useState(100)
-  const callbackFunction = (message) => {
-    if (message === 'clear')
-      setClearValue(!clearValue)
-    else {
-      setMessage(message)
-    }
+  const [algorithm, setAlgorithm] = useState('')
+  const [visualizeCommand, setVisualizeCommand] = useState('')
+  const [clearBoard, setClearBoard] = useState(0)
+  const [clearPath, setClearPath] = useState(0)
+  const [pausePlay, setPausePlay] = useState()
+
+  const setAlgo = (algo) => {
+    setAlgorithm(algo)
   }
 
-  useEffect(() => {
-    setMessage('')
-  }, [clearValue])
-
-  const set = (value) => {
-    setSpeed(value)
+  const setVisualizeCom = (com) => {
+    setVisualizeCommand(com)
   }
 
+  const setClearBo = (com) => {
+    setClearBoard(com)
+  }
+  
+  const setClearPa = (com) => {
+    setClearPath(com)
+  }
+
+  const setPP = (com) => {
+    setPausePlay(com)
+  }
+  
   return (
     <div className="App">
-      <Header callBack={callbackFunction} speed={set} />
-      <Board clearValue={clearValue} incomingMessage={message} speed={speed}/>
+      <Header outgoingAlgorithm={setAlgo} 
+              outgoingClearBoard={setClearBo} 
+              outgoingClearPath={setClearPa} 
+              outgoingVisualizeCommand={setVisualizeCom}
+              outgoingPausePlay={setPP}/>
+      <Board incomingAlgorithm={algorithm} 
+             incomingClearBoard={clearBoard} 
+             incoming ClearPath={clearPath} 
+             incomingVisualizeCommand={visualizeCommand}
+             incomingPausePlay={pausePlay}/>
     </div>
   );
 }

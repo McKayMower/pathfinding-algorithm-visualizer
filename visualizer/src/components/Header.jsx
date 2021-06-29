@@ -1,48 +1,39 @@
 import '../css for components/Header.css'
-import { useState,useEffect } from 'react'
-import Slider from '@material-ui/core/Slider';
+import { useState, } from 'react'
 
-const handleRedirect = () => {
-    console.log('page refresh here')
-}
+const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outgoingVisualizeCommand, outgoingPausePlay }) => {
 
-const Header = ({ callBack, speed }) => {
-
-    const sendCallback = (message) => {
-        callBack(message)
-    }
-    const valuetext = (value) => {
-        setSpeedValue(value)
+    const sendAlgorithm = (message) => {
+        outgoingAlgorithm(message)
     }
 
-    const sendSpeed = (value) => {
-        speed(value)
+    const sendClearBoard = () => {
+        outgoingClearBoard(Math.random())
     }
+
+    const sendClearPath = () => {
+        outgoingClearPath(Math.random())
+    }
+
+    const sendVisualize = () => {
+        outgoingVisualizeCommand(Math.random())
+    }
+
+    const sendPausePlay = () => {
+        outgoingPausePlay(paused)
+    }
+
     const [showMenu, setShowMenu] = useState(false)
     const [visualizeString, setVisualizeString] = useState('Show Me!')
-    const [speedValue, setSpeedValue] = useState(100)
-
-    useEffect(() => {
-        sendSpeed(speedValue)
-    }, [speedValue])
+    const [paused, setPaused] = useState(true)
+    const [visualizing, setVisualizing] = useState(false)
 
     return (
         <div className='header-container'>
 
             <h1 className='title'
-                onClick={() => handleRedirect()}>Pathfinding Visualizer</h1>
-            <div className='slider2'>
-                <Slider
-                    defaultValue={0.00000005}
-                    getAriaValueText={valuetext}
-                    aria-labelledby="discrete-slider-small-steps"
-                    step={0.00000001}
-                    marks
-                    min={-0.00000005}
-                    max={0.0000001}
-                    valueLabelDisplay="auto"
-                />
-            </div>
+                onClick={() => window.location.reload()}>Pathfinding Visualizer</h1>
+
             <button className='algo-select'
                 onClick={() => setShowMenu(!showMenu ? true : false)}
                 onMouseEnter={() => setShowMenu(true)}
@@ -51,15 +42,15 @@ const Header = ({ callBack, speed }) => {
                 {showMenu &&
                     <div className='menu'>
                         <button onClick={() => {
-                            sendCallback('dijkstras')
+                            sendAlgorithm('dijkstras')
                             setVisualizeString('Show Me Dijkstra\'s!')
                         }}>Dijkstra's</button>
                         <button onClick={() => {
-                            sendCallback('depth-first')
+                            sendAlgorithm('depth-first')
                             setVisualizeString('Show Me Depth-First!')
                         }}>Depth-First</button>
                         <button onClick={() => {
-                            sendCallback('breadth-first')
+                            sendAlgorithm('breadth-first')
                             setVisualizeString('Show Me Breadth-First!')
                         }}>Breadth-First</button>
                     </div>
@@ -68,32 +59,43 @@ const Header = ({ callBack, speed }) => {
             <button
                 className='visualize-button'
                 onClick={() => {
-                    sendCallback('visualize')
-                    visualizeString === 'Show Me!' && setVisualizeString('Pick an Algorithm')
+                    sendVisualize()
+                    visualizeString === 'Show Me!' ? setVisualizeString('Pick an Algorithm') 
+                                                   : setVisualizing(true)
+                    setPaused(false)
                 }}>
                 {visualizeString}
             </button>
-            <button className='clear-button'
+            <button className='clear-board-button'
                 onClick={() => {
-                    sendCallback('clear')
+                    sendClearBoard('clear board')
                     setVisualizeString('Show Me!')
                 }}
             >
                 Clear Board
             </button>
-            <div className='slider'>
-                <Slider
-                    defaultValue={100}
-                    getAriaValueText={valuetext}
-                    aria-labelledby="discrete-slider-small-steps"
-                    step={25}
-                    marks
-                    min={0}
-                    max={200}
-                    valueLabelDisplay="auto"
-                />
-            </div>
+            <button className='clear-path-button'
+                onClick={() => {
+                    sendClearPath('clear path')
+                    setVisualizeString('Show Me!')
+                }}
+            >
+                Clear Path
+            </button>
+
+            { visualizing &&
+                <button className='pause-play-button'
+                    onClick={() => {
+                        paused ? setPaused(false) : setPaused(true)
+                        sendPausePlay()
+                    }}
+                >
+                    {paused ? 'Resume Visualization' : 'Pause Visualization'}
+                </button>
+            }
+
         </div >
+
     )
 }
 
