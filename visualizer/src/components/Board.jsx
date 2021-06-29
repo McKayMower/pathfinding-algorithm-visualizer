@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import '../css for components/Board.css'
 import PriorityQueue from 'js-priority-queue'
 
+let interStop = 0
+
 const Board = ({ clearValue, incomingMessage, speed }) => {
 
     const boardHeight = 29
@@ -16,8 +18,7 @@ const Board = ({ clearValue, incomingMessage, speed }) => {
     const [key, setKey] = useState(0)
     const [canDraw, setCanDraw] = useState(true)
     const [algorithm, setAlgorithm] = useState('')
-
-    let interStop = 0
+    
     let finished = false
     let traversed = []
     let fifo = []
@@ -275,6 +276,7 @@ const Board = ({ clearValue, incomingMessage, speed }) => {
             if (traversed.length === 0) {
                 traversed = []
                 setCanDraw(true)
+                console.log("clearing");
                 clearInterval(interStop);
                 if (algorithm === 'dijkstras')
                     showPath()
