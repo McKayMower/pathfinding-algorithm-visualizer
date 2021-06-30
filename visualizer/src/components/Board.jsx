@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import '../css for components/Board.css'
 import PriorityQueue from 'js-priority-queue'
 let interStop = 0
-
+let asdf = 0;
 const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incomingVisualizeCommand, incomingPausePlay }) => {
 
     const boardHeight = 29
