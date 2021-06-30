@@ -18,6 +18,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
     const [canDraw, setCanDraw] = useState(true)
     const [algorithm, setAlgorithm] = useState('')
 
+    
     let finished = false
     let traversed = []
     let fifo = []
@@ -309,6 +310,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
             if (traversed.length === 0) {
                 traversed = []
                 setCanDraw(true)
+                console.log("clearing");
                 clearInterval(interStop);
                 if (algorithm === 'dijkstras')
                     showPath()
