@@ -20,7 +20,7 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
     }
 
     const sendPausePlay = () => {
-        outgoingPausePlay(paused)
+        outgoingPausePlay(!paused)
     }
 
     const [showMenu, setShowMenu] = useState(false)
@@ -59,10 +59,15 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
             <button
                 className='visualize-button'
                 onClick={() => {
-                    sendVisualize()
-                    visualizeString === 'Show Me!' ? setVisualizeString('Pick an Algorithm') 
-                                                   : setVisualizing(true)
-                    setPaused(false)
+                    if (visualizeString === 'Show Me!') {
+                        setVisualizeString('Pick an Algorithm')
+                        return
+                    }
+                    if (visualizeString !== 'Show Me!' && visualizeString !== 'Pick an Algorithm') {
+                        setVisualizing(true)
+                        sendVisualize()
+                       // setPaused(false)
+                    }
                 }}>
                 {visualizeString}
             </button>
@@ -83,16 +88,16 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
                 Clear Path
             </button>
 
-            { visualizing &&
+            {/* {visualizing &&
                 <button className='pause-play-button'
                     onClick={() => {
-                        paused ? setPaused(false) : setPaused(true)
+                        !paused ? setPaused(true) : setPaused(false)
                         sendPausePlay()
                     }}
                 >
                     {paused ? 'Resume Visualization' : 'Pause Visualization'}
                 </button>
-            }
+            } */}
 
         </div >
 

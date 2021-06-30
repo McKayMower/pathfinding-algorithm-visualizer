@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import '../css for components/Board.css'
 import PriorityQueue from 'js-priority-queue'
-let interStop = 0
 
 const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incomingVisualizeCommand, incomingPausePlay }) => {
 
-    const boardHeight = 29
+    const boardHeight = 30
     const boardWidth = 56
 
     const [board, setBoard] = useState([])
@@ -17,10 +16,11 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
     const [key, setKey] = useState(0)
     const [canDraw, setCanDraw] = useState(true)
     const [algorithm, setAlgorithm] = useState('')
-
     let finished = false
     let traversed = []
     let fifo = []
+
+    const interval = useRef(null)
 
     let style = {
         width: '25px',
@@ -29,50 +29,13 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
         backgroundColor: 'white',
     }
 
-    let wallStyle = {
-        width: '25px',
-        height: '25px',
-        border: '0.5px solid black',
-        backgroundColor: 'black',
-    }
-
-    // let startStyle = {
-    //     width: '25px',
-    //     height: '25px',
-    //     border: '0.5px solid black',
-    //     backgroundColor: 'green',
-    // }
-
-    // let findingStyle = {
-    //     width: '25px',
-    //     height: '25px',
-    //     border: '0.5px solid black',
-    //     backgroundColor: '#2596be',
-    //     transition: 'background-color .2s linear'
-    // }
-
-    // let showingStyle = {
-    //     width: '25px',
-    //     height: '25px',
-    //     border: '0.5px solid black',
-    //     backgroundColor: 'grey',
-    //     transition: 'background-color .2s linear'
-    // }
-
-    // let stopStyle = {
-    //     width: '25px',
-    //     height: '25px',
-    //     border: '0.5px solid black',
-    //     backgroundColor: 'red',
-    // }
-
     //clear board useEffect
     useEffect(() => {
         setBoard(createBoard(boardHeight, boardWidth))
         setStopCoordinates({ row: 15, col: 42 })
         setStartCoordinates({ row: 15, col: 14 })
         setKey(key => key + 1)
-        clearInterval(interStop)
+        clearInterval(interval.current)
         setCanDraw(true)
     }, [incomingClearBoard])
 
@@ -80,18 +43,18 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
     useEffect(() => {
         board.forEach((row, ri) => {
             row.forEach((col, ci) => {
-                //console.log(`before- showing: ${board[ri][ci].showing} finding: ${board[ri][ci].finding} visited: ${board[ri][ci].visited}`);
                 board[ri][ci].showing = false
                 board[ri][ci].finding = false
                 board[ri][ci].visited = false
                 board[ri][ci].distance = Infinity
                 board[ri][ci].prev = null
-                //console.log(`after- showing: ${board[ri][ci].showing} finding: ${board[ri][ci].finding} visited: ${board[ri][ci].visited}`);
+                if (ri === startCoordinates.row && ci === startCoordinates.col)
+                    board[ri][ci].distance = 0
             })
         })
         setKey(prev => prev + 1)
         setCanDraw(true)
-        clearInterval(interStop)
+        clearInterval(interval.current)
     }, [incomingClearPath])
 
     //algorithm useEffect
@@ -104,14 +67,18 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
         handleAlgorithm()
     }, [incomingVisualizeCommand])
 
-    useEffect(() => {
-        if (incomingPausePlay) {//if paused
-            clearInterval(interStop)
-        }
-        else { //if 
-            clearInterval(interStop)
-        }
-    }, [incomingPausePlay])
+    // useEffect(() => {
+    //     console.log(`pauseplay button changed`);
+    //     if (incomingPausePlay) {//if paused
+    //         console.log('PAUSED');
+    //         setKey(prev => prev + 1)
+    //         setCanDraw(true)
+    //         clearInterval(interval.current)
+    //     }
+    //     else { //if 
+    //         console.log('RESUMED')
+    //     }
+    // }, [incomingPausePlay])
 
     //initialize on page loadup
     useEffect(() => {
@@ -268,6 +235,19 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
 
     const handleAlgorithm = () => {
         setCanDraw(false)
+        clearInterval(interval.current)
+        board.forEach((row, ri) => {
+            row.forEach((col, ci) => {
+                board[ri][ci].showing = false
+                board[ri][ci].finding = false
+                board[ri][ci].visited = false
+                board[ri][ci].distance = Infinity
+                board[ri][ci].prev = null
+                if (ri === startCoordinates.row && ci === startCoordinates.col)
+                    board[ri][ci].distance = 0
+            })
+        })
+
         switch (algorithm) {
             case 'dijkstras':
                 handleDijkstras()
@@ -288,7 +268,8 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
 
     const showPath = () => {
         let curr = board[stopCoordinates.row][stopCoordinates.col]
-        interStop = setInterval(() => {
+
+        interval.current = setInterval(() => {
             if (curr.prev !== null) {
                 board[curr.row][curr.col].showing = true
                 curr = board[curr.prev.row][curr.prev.col]
@@ -296,20 +277,21 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
             }
             else {
                 setCanDraw(true)
-                clearInterval(interStop)
+                clearInterval(interval.current)
             }
         }, 0)
     }
 
     const visualizeAlgorithm = () => {
-        interStop = setInterval(() => {
+        
+        interval.current = setInterval(() => {
             let element = traversed.shift()
             board[element.row][element.col].finding = true
             setKey(key => key + 1)
             if (traversed.length === 0) {
                 traversed = []
                 setCanDraw(true)
-                clearInterval(interStop);
+                clearInterval(interval.current);
                 if (algorithm === 'dijkstras')
                     showPath()
             }
@@ -347,6 +329,8 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 board[ri][ci].distance = 0
                 board[ri][ci].start = true
                 board[ri][ci].isCellWall = false
+                board[ri][ci].finding = false
+                board[ri][ci].showing = false
             }
         }
         else if (clickingStop) {
@@ -357,6 +341,8 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 setStopCoordinates({ row: ri, col: ci })
                 board[ri][ci].stop = true
                 board[ri][ci].isCellWall = false
+                board[ri][ci].finding = false
+                board[ri][ci].showing = false
             }
         }
     }
@@ -460,7 +446,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                                             onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}></td>)
                                     }
                                     else if (board[ri][ci].isCellWall) {
-                                        return (<td className='cell-wall' key={`${ri},${ci}`} style={wallStyle} id={`${ri},${ci}`}
+                                        return (<td className='cell-wall' key={`${ri},${ci}`} id={`${ri},${ci}`}
                                             onDragStart={(event) => { event.preventDefault() }}
                                             onPointerDown={(event) => {
                                                 handleCellClick(event, ri, ci)
