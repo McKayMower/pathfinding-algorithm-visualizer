@@ -25,7 +25,7 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
 
     const [showMenu, setShowMenu] = useState(false)
     const [visualizeString, setVisualizeString] = useState('Show Me!')
-    const [paused, setPaused] = useState(true)
+    const [paused, setPaused] = useState(false)
     const [visualizing, setVisualizing] = useState(false)
 
     return (
@@ -68,7 +68,7 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
             </button>
             <button className='clear-board-button'
                 onClick={() => {
-                    sendClearBoard('clear board')
+                    sendClearBoard()
                     setVisualizeString('Show Me!')
                 }}
             >
@@ -76,7 +76,7 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
             </button>
             <button className='clear-path-button'
                 onClick={() => {
-                    sendClearPath('clear path')
+                    sendClearPath()
                     setVisualizeString('Show Me!')
                 }}
             >

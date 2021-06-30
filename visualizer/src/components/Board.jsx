@@ -68,12 +68,30 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
 
     //clear board useEffect
     useEffect(() => {
-        clearFullBoard()
+        setBoard(createBoard(boardHeight, boardWidth))
+        setStopCoordinates({ row: 15, col: 42 })
+        setStartCoordinates({ row: 15, col: 14 })
+        setKey(key => key + 1)
+        clearInterval(interStop)
+        setCanDraw(true)
     }, [incomingClearBoard])
 
     //clear path useEffect
     useEffect(() => {
-        clearPath()
+        board.forEach((row, ri) => {
+            row.forEach((col, ci) => {
+                //console.log(`before- showing: ${board[ri][ci].showing} finding: ${board[ri][ci].finding} visited: ${board[ri][ci].visited}`);
+                board[ri][ci].showing = false
+                board[ri][ci].finding = false
+                board[ri][ci].visited = false
+                board[ri][ci].distance = Infinity
+                board[ri][ci].prev = null
+                //console.log(`after- showing: ${board[ri][ci].showing} finding: ${board[ri][ci].finding} visited: ${board[ri][ci].visited}`);
+            })
+        })
+        setKey(prev => prev + 1)
+        setCanDraw(true)
+        clearInterval(interStop)
     }, [incomingClearPath])
 
     //algorithm useEffect
@@ -85,31 +103,23 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
     useEffect(() => {
         handleAlgorithm()
     }, [incomingVisualizeCommand])
-    
+
     useEffect(() => {
-        if(incomingPausePlay) { //if paused
+        if (incomingPausePlay) {//if paused
             clearInterval(interStop)
         }
-        else { //if play
+        else { //if 
             clearInterval(interStop)
         }
     }, [incomingPausePlay])
-    //sets board on page loadup
+
+    //initialize on page loadup
     useEffect(() => {
         setBoard(createBoard(boardHeight, boardWidth))
         setStopCoordinates({ row: 15, col: 42 })
         setStartCoordinates({ row: 15, col: 14 })
         setCanDraw(true)
     }, [])
-
-    const clearFullBoard = () => {
-        //setKey(key => key + 1)
-        clearInterval(interStop)
-    }
-
-    const clearPath = () => {
-        clearInterval(interStop)
-    }
 
     const createBoard = (rowCount, colCount) => {
         let board = [];
@@ -119,15 +129,15 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 col.push({
                     row: x,
                     col: y,
-                    visited: false,
-                    distance: Infinity,
-                    prev: null,
-                    cellWall: false,
-                    visualize: false,
                     start: false,
                     stop: false,
+                    isCell: false,
+                    isCellWall: false,
+                    prev: null,
+                    visited: false,
                     finding: false,
                     showing: false,
+                    distance: Infinity,
                 })
             }
             board.push(col);
@@ -153,7 +163,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 break
             }
             //right
-            if (curr.col + 1 < boardWidth && !board[curr.row][curr.col + 1].cellWall && !board[curr.row][curr.col + 1].start && !board[curr.row][curr.col + 1].visited) {
+            if (curr.col + 1 < boardWidth && !board[curr.row][curr.col + 1].isCellWall && !board[curr.row][curr.col + 1].start && !board[curr.row][curr.col + 1].visited) {
                 board[curr.row][curr.col].visited = true
                 let tempDistance = curr.distance + 1
                 if (tempDistance < board[curr.row][curr.col + 1].distance) {
@@ -163,7 +173,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 }
             }
             //down
-            if (curr.row + 1 < boardHeight && !board[curr.row + 1][curr.col].cellWall && !board[curr.row + 1][curr.col].start && !board[curr.row + 1][curr.col].visited) {
+            if (curr.row + 1 < boardHeight && !board[curr.row + 1][curr.col].isCellWall && !board[curr.row + 1][curr.col].start && !board[curr.row + 1][curr.col].visited) {
                 board[curr.row][curr.col].visited = true
                 let tempDistance = curr.distance + 1
                 if (tempDistance < board[curr.row + 1][curr.col].distance) {
@@ -173,7 +183,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 }
             }
             //left
-            if (curr.col - 1 >= 0 && !board[curr.row][curr.col - 1].cellWall && !board[curr.row][curr.col - 1].start && !board[curr.row][curr.col - 1].visited) {
+            if (curr.col - 1 >= 0 && !board[curr.row][curr.col - 1].isCellWall && !board[curr.row][curr.col - 1].start && !board[curr.row][curr.col - 1].visited) {
                 board[curr.row][curr.col].visited = true
                 let tempDistance = curr.distance + 1
                 if (tempDistance < board[curr.row][curr.col - 1].distance) {
@@ -183,7 +193,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 }
             }
             //up
-            if (curr.row - 1 >= 0 && !board[curr.row - 1][curr.col].cellWall && !board[curr.row - 1][curr.col].start && !board[curr.row - 1][curr.col].visited) {
+            if (curr.row - 1 >= 0 && !board[curr.row - 1][curr.col].isCellWall && !board[curr.row - 1][curr.col].start && !board[curr.row - 1][curr.col].visited) {
                 board[curr.row][curr.col].visited = true
                 let tempDistance = curr.distance + 1
                 if (tempDistance < board[curr.row - 1][curr.col].distance) {
@@ -206,16 +216,16 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 board[row][col].visited = true
                 traversed.push({ row, col })
             }
-            if (!finished && col + 1 < boardWidth && !board[row][col + 1].cellWall && !board[row][col + 1].start && !board[row][col + 1].visited) { //right
+            if (!finished && col + 1 < boardWidth && !board[row][col + 1].isCellWall && !board[row][col + 1].start && !board[row][col + 1].visited) { //right
                 handleDFS(row, col + 1)
             }
-            if (!finished && row + 1 < boardHeight && !board[row + 1][col].cellWall && !board[row + 1][col].start && !board[row + 1][col].visited) { //down
+            if (!finished && row + 1 < boardHeight && !board[row + 1][col].isCellWall && !board[row + 1][col].start && !board[row + 1][col].visited) { //down
                 handleDFS(row + 1, col)
             }
-            if (!finished && col - 1 >= 0 && !board[row][col - 1].cellWall && !board[row][col - 1].start && !board[row][col - 1].visited) { //left
+            if (!finished && col - 1 >= 0 && !board[row][col - 1].isCellWall && !board[row][col - 1].start && !board[row][col - 1].visited) { //left
                 handleDFS(row, col - 1)
             }
-            if (!finished && row - 1 >= 0 && !board[row - 1][col].cellWall && !board[row - 1][col].start && !board[row - 1][col].visited) { //up
+            if (!finished && row - 1 >= 0 && !board[row - 1][col].isCellWall && !board[row - 1][col].start && !board[row - 1][col].visited) { //up
                 handleDFS(row - 1, col)
             }
         }
@@ -233,22 +243,22 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
             if (crow === stopCoordinates.row && ccol === stopCoordinates.col) {
                 finished = true
             }
-            if (ccol + 1 < boardWidth && !board[crow][ccol + 1].visited && !board[crow][ccol + 1].cellWall) { //right
+            if (ccol + 1 < boardWidth && !board[crow][ccol + 1].visited && !board[crow][ccol + 1].isCellWall) { //right
                 let temp = ccol + 1
                 board[crow][ccol + 1].visited = true
                 fifo.push({ row: crow, col: temp })
             }
-            if (crow + 1 < boardHeight && !board[crow + 1][ccol].visited && !board[crow + 1][ccol].cellWall) { //down
+            if (crow + 1 < boardHeight && !board[crow + 1][ccol].visited && !board[crow + 1][ccol].isCellWall) { //down
                 let temp = crow + 1
                 board[crow + 1][ccol].visited = true
                 fifo.push({ row: temp, col: ccol })
             }
-            if (ccol - 1 >= 0 && !board[crow][ccol - 1].visited && !board[crow][ccol - 1].cellWall) { //left
+            if (ccol - 1 >= 0 && !board[crow][ccol - 1].visited && !board[crow][ccol - 1].isCellWall) { //left
                 let temp = ccol - 1
                 board[crow][ccol - 1].visited = true
                 fifo.push({ row: crow, col: temp })
             }
-            if (crow - 1 >= 0 && !board[crow - 1][ccol].visited && !board[crow - 1][ccol].cellWall) { //up
+            if (crow - 1 >= 0 && !board[crow - 1][ccol].visited && !board[crow - 1][ccol].isCellWall) { //up
                 let temp = crow - 1
                 board[crow - 1][ccol].visited = true
                 fifo.push({ row: temp, col: ccol })
@@ -258,7 +268,6 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
 
     const handleAlgorithm = () => {
         setCanDraw(false)
-
         switch (algorithm) {
             case 'dijkstras':
                 handleDijkstras()
@@ -314,15 +323,17 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
         if (clickingCell) { //clicking cell/cell wall
             if (event.target.className === 'start-cell' || event.target.className === 'stop-cell') { }
             else {
-                if (!board[ri][ci].cellWall) {
+                if (!board[ri][ci].isCellWall) {
                     event.target.style.backgroundColor = 'black'
                     event.target.className = 'cell-wall'
-                    board[ri][ci].cellWall = true
+                    board[ri][ci].isCellWall = true
                 }
                 else {
                     event.target.style.backgroundColor = 'white'
                     event.target.className = 'cell'
-                    board[ri][ci].cellWall = false
+                    board[ri][ci].isCellWall = false
+                    board[ri][ci].finding = false
+                    board[ri][ci].showing = false
                 }
             }
         }
@@ -335,7 +346,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 setStartCoordinates({ row: ri, col: ci })
                 board[ri][ci].distance = 0
                 board[ri][ci].start = true
-                board[ri][ci].cellWall = false
+                board[ri][ci].isCellWall = false
             }
         }
         else if (clickingStop) {
@@ -345,19 +356,21 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 board[stopCoordinates.row][stopCoordinates.col].stop = false
                 setStopCoordinates({ row: ri, col: ci })
                 board[ri][ci].stop = true
-                board[ri][ci].cellWall = false
+                board[ri][ci].isCellWall = false
             }
         }
     }
 
     const handleCellClick = (event, ri, ci) => {
-        if (event.target.className === 'cell') {
+        if (event.target.className === 'cell' || event.target.className === 'finding' || event.target.className === 'showing') {
             event.target.className = 'cell-wall'
-            board[ri][ci].cellWall = true
+            board[ri][ci].isCellWall = true
+            board[ri][ci].finding = false
+            board[ri][ci].showing = false
         }
         else {
             event.target.className = 'cell'
-            board[ri][ci].cellWall = false
+            board[ri][ci].isCellWall = false
         }
     }
 
@@ -372,13 +385,13 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 <tbody>
                     {board.map((row, ri) => {
                         return (
-                            <tr className='row' key={ri} >
+                            <tr className='row' key={ri} id={ri} >
                                 {row.map((col, ci) => {
                                     if (ri === startCoordinates.row && ci === startCoordinates.col) {
                                         board[ri][ci].start = true
                                         board[ri][ci].distance = 0
                                         return (
-                                            <td className='start-cell' key={`${ri},${ci}`}
+                                            <td className='start-cell' key={`${ri},${ci}`} id={`${ri},${ci}`}
                                                 onDragStart={(event) => { event.preventDefault() }}
                                                 onPointerDown={() => {
                                                     setClickingStart(true)
@@ -397,7 +410,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                                     else if (ri === stopCoordinates.row && ci === stopCoordinates.col) {
                                         board[ri][ci].stop = true
                                         return (
-                                            <td className='stop-cell' key={`${ri},${ci}`}
+                                            <td className='stop-cell' key={`${ri},${ci}`} id={`${ri},${ci}`}
                                                 onDragStart={(event) => { event.preventDefault() }}
                                                 onPointerDown={() => {
                                                     setClickingStop(true)
@@ -415,13 +428,39 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
 
                                     }
                                     else if (board[ri][ci].showing) {
-                                        return (<td className='showing' key={`${ri},${ci}`}></td>)
+                                        return (<td className='showing' key={`${ri},${ci}`} id={`${ri},${ci}`}
+                                            onDragStart={(event) => { event.preventDefault() }}
+                                            onPointerDown={(event) => {
+                                                handleCellClick(event, ri, ci)
+                                                setClickingCell(true)
+                                                setClickingStart(false)
+                                                setClickingStop(false)
+                                            }}
+                                            onPointerUp={() => {
+                                                setClickingCell(false)
+                                                setClickingStart(false)
+                                                setClickingStop(false)
+                                            }}
+                                            onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}></td>)
                                     }
                                     else if (board[ri][ci].finding) {
-                                        return (<td className='finding' key={`${ri},${ci}`}></td>)
+                                        return (<td className='finding' key={`${ri},${ci}`} id={`${ri},${ci}`}
+                                            onDragStart={(event) => { event.preventDefault() }}
+                                            onPointerDown={(event) => {
+                                                handleCellClick(event, ri, ci)
+                                                setClickingCell(true)
+                                                setClickingStart(false)
+                                                setClickingStop(false)
+                                            }}
+                                            onPointerUp={() => {
+                                                setClickingCell(false)
+                                                setClickingStart(false)
+                                                setClickingStop(false)
+                                            }}
+                                            onPointerOver={(event) => { handleMouseOver(event, ci, ri) }}></td>)
                                     }
-                                    else if (board[ri][ci].cellWall) {
-                                        return (<td className='cell-wall' key={`${ri},${ci}`} style={wallStyle}
+                                    else if (board[ri][ci].isCellWall) {
+                                        return (<td className='cell-wall' key={`${ri},${ci}`} style={wallStyle} id={`${ri},${ci}`}
                                             onDragStart={(event) => { event.preventDefault() }}
                                             onPointerDown={(event) => {
                                                 handleCellClick(event, ri, ci)
@@ -438,8 +477,9 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                                         </td>)
                                     }
                                     else {
+                                        board[ri][ci].isCell = true
                                         return (
-                                            <td className='cell' key={`${ri},${ci}`} style={style}
+                                            <td className='cell' key={`${ri},${ci}`} style={style} id={`${ri},${ci}`}
                                                 onDragStart={(event) => { event.preventDefault() }}
                                                 onPointerDown={(event) => {
                                                     handleCellClick(event, ri, ci)
@@ -470,22 +510,22 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                 <tbody>
                     {board.map((row, ri) => {
                         return (
-                            <tr className='row' key={ri} >
+                            <tr className='row' key={ri} id={ri} >
                                 {row.map((col, ci) => {
                                     if (ri === startCoordinates.row && ci === startCoordinates.col)
-                                        return (<td className='start-cell' key={`${ri},${ci}`}></td>)
+                                        return (<td className='start-cell' key={`${ri},${ci}`} id={`${ri},${ci}`}></td>)
                                     else if (ri === stopCoordinates.row && ci === stopCoordinates.col)
-                                        return (<td className='stop-cell' key={`${ri},${ci}`}></td>)
+                                        return (<td className='stop-cell' key={`${ri},${ci}`} id={`${ri},${ci}`}></td>)
                                     else if (board[ri][ci].showing) {
-                                        return (<td className='showing' key={`${ri},${ci}`}></td>)
+                                        return (<td className='showing' key={`${ri},${ci}`} id={`${ri},${ci}`}></td>)
                                     }
                                     else if (board[ri][ci].finding) {
-                                        return (<td className='finding' key={`${ri},${ci}`}></td>)
+                                        return (<td className='finding' key={`${ri},${ci}`} id={`${ri},${ci}`}></td>)
                                     }
-                                    else if (board[ri][ci].cellWall)
-                                        return (<td className='cell-wall' key={`${ri},${ci}`}></td>)
-                                    else
-                                        return (<td className='cell' key={`${ri},${ci}`}></td>)
+                                    else if (board[ri][ci].isCellWall)
+                                        return (<td className='cell-wall' key={`${ri},${ci}`} id={`${ri},${ci}`}></td>)
+                                    else if (board[ri][ci].isCell)
+                                        return (<td className='cell' key={`${ri},${ci}`} id={`${ri},${ci}`}></td>)
                                 })}
                             </tr>
                         )

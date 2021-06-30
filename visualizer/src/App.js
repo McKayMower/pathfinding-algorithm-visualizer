@@ -1,7 +1,7 @@
 import './App.css';
 import Board from './components/Board'
 import Header from './components/Header'
-import { useState, useEffect } from 'react'
+import { useState,} from 'react'
 
 function App() {
   const [algorithm, setAlgorithm] = useState('')
@@ -39,7 +39,7 @@ function App() {
               outgoingPausePlay={setPP}/>
       <Board incomingAlgorithm={algorithm} 
              incomingClearBoard={clearBoard} 
-             incoming ClearPath={clearPath} 
+             incomingClearPath={clearPath} 
              incomingVisualizeCommand={visualizeCommand}
              incomingPausePlay={pausePlay}/>
     </div>
