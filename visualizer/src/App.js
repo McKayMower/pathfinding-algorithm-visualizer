@@ -9,7 +9,11 @@ function App() {
   const [clearBoard, setClearBoard] = useState(0)
   const [clearPath, setClearPath] = useState(0)
   const [pausePlay, setPausePlay] = useState()
+  const [maze, setMaze] = useState('')
 
+  const setMazeAlgo = (algo) => {
+    setMaze(algo)
+  }
   const setAlgo = (algo) => {
     setAlgorithm(algo)
   }
@@ -33,11 +37,13 @@ function App() {
   return (
     <div className="App">
       <Header outgoingAlgorithm={setAlgo} 
+              outgoingMazeAlgorithm={setMazeAlgo}
               outgoingClearBoard={setClearBo} 
               outgoingClearPath={setClearPa} 
               outgoingVisualizeCommand={setVisualizeCom}
               outgoingPausePlay={setPP}/>
       <Board incomingAlgorithm={algorithm} 
+             incomingMazeAlgorithm={maze}
              incomingClearBoard={clearBoard} 
              incomingClearPath={clearPath} 
              incomingVisualizeCommand={visualizeCommand}

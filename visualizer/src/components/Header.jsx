@@ -1,12 +1,15 @@
 import '../css for components/Header.css'
 import { useState, } from 'react'
 
-const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outgoingVisualizeCommand, outgoingPausePlay }) => {
+const Header = ({ outgoingAlgorithm, outgoingMazeAlgorithm, outgoingClearBoard, outgoingClearPath, outgoingVisualizeCommand, outgoingPausePlay }) => {
 
-    const sendAlgorithm = (message) => {
-        outgoingAlgorithm(message)
+    const sendAlgorithm = (algo) => {
+        outgoingAlgorithm(algo)
     }
 
+    const sendMaze = (algo) => {
+        outgoingMazeAlgorithm(algo)
+    }
     const sendClearBoard = () => {
         outgoingClearBoard(Math.random())
     }
@@ -23,7 +26,8 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
         outgoingPausePlay(!paused)
     }
 
-    const [showMenu, setShowMenu] = useState(false)
+    const [showAlgoMenu, setShowAlgoMenu] = useState(false)
+    const [showMazeMenu, setShowMazeMenu] = useState(false)
     const [visualizeString, setVisualizeString] = useState('Show Me!')
     const [paused, setPaused] = useState(false)
     const [visualizing, setVisualizing] = useState(false)
@@ -34,28 +38,45 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
             <h1 className='title'
                 onClick={() => window.location.reload()}>Pathfinding Visualizer</h1>
 
-            <button className='algo-select'
-                onClick={() => setShowMenu(!showMenu ? true : false)}
-                onMouseEnter={() => setShowMenu(true)}
-                onMouseLeave={() => setShowMenu(false)}>
-                Select Algorithm
-                {showMenu &&
+            <button className='maze-select'
+                onClick={() => setShowMazeMenu(!showMazeMenu ? true : false)}
+                onMouseEnter={() => setShowMazeMenu(true)}
+                onMouseLeave={() => setShowMazeMenu(false)}>
+                Select Maze Algorithm
+                {showMazeMenu &&
                     <div className='menu'>
                         <button onClick={() => {
-                            sendAlgorithm('dijkstras')
-                            setVisualizeString('Show Me Dijkstra\'s!')
-                        }}>Dijkstra's</button>
-                        <button onClick={() => {
-                            sendAlgorithm('depth-first')
-                            setVisualizeString('Show Me Depth-First!')
-                        }}>Depth-First</button>
-                        <button onClick={() => {
-                            sendAlgorithm('breadth-first')
-                            setVisualizeString('Show Me Breadth-First!')
-                        }}>Breadth-First</button>
+                            sendMaze('Depth First Maze')
+                        }}>Depth First Maze</button>
+
                     </div>
+
                 }
             </button>
+
+            <button className='algo-select'
+                onClick={() => setShowAlgoMenu(!showAlgoMenu ? true : false)}
+                onMouseEnter={() => setShowAlgoMenu(true)}
+                onMouseLeave={() => setShowAlgoMenu(false)}>
+                Select Path Algorithm
+                {showAlgoMenu && <div className='menu'>
+                    <button onClick={() => {
+                        sendAlgorithm('dijkstras')
+                        setVisualizeString('Show Me Dijkstra\'s!')
+                    }}>Dijkstra's</button>
+                    <button onClick={() => {
+                        sendAlgorithm('depth-first')
+                        setVisualizeString('Show Me Depth-First!')
+                    }}>Depth-First</button>
+                    <button onClick={() => {
+                        sendAlgorithm('breadth-first')
+                        setVisualizeString('Show Me Breadth-First!')
+                    }}>Breadth-First</button>
+                </div>
+
+                }
+            </button>
+
             <button
                 className='visualize-button'
                 onClick={() => {
@@ -66,7 +87,7 @@ const Header = ({ outgoingAlgorithm, outgoingClearBoard, outgoingClearPath, outg
                     if (visualizeString !== 'Show Me!' && visualizeString !== 'Pick an Algorithm') {
                         setVisualizing(true)
                         sendVisualize()
-                       // setPaused(false)
+                        //setPaused(false)
                     }
                 }}>
                 {visualizeString}

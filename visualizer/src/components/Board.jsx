@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import '../css for components/Board.css'
 import PriorityQueue from 'js-priority-queue'
 
-const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incomingVisualizeCommand, incomingPausePlay }) => {
+const Board = ({ incomingAlgorithm, incomingMazeAlgorithm, incomingClearBoard, incomingClearPath, incomingVisualizeCommand, incomingPausePlay }) => {
 
-    const boardHeight = 30
-    const boardWidth = 56
+    const boardHeight = 31
+    const boardWidth = 57
 
     const [board, setBoard] = useState([])
     const [startCoordinates, setStartCoordinates] = useState({ row: 15, col: 14 })
@@ -16,11 +16,11 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
     const [key, setKey] = useState(0)
     const [canDraw, setCanDraw] = useState(true)
     const [algorithm, setAlgorithm] = useState('')
+    const interval = useRef(null)
     let finished = false
     let traversed = []
     let fifo = []
 
-    const interval = useRef(null)
 
     let style = {
         width: '25px',
@@ -62,6 +62,78 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
         setAlgorithm(incomingAlgorithm)
     }, [incomingAlgorithm])
 
+    useEffect(() => {
+        setCanDraw(false)
+
+        if (incomingMazeAlgorithm === 'Depth First Maze') {
+            board.forEach((row, ri) => {
+                row.forEach((col, ci) => {
+                    board[ri][ci].isCellWall = true
+                })
+            })
+            setKey(prev => prev + 1)
+            fifo.push({ row: 1, col: 1 })
+
+            while (fifo.length) {
+                let rand = Math.floor(Math.random() * 4)
+                let curr = fifo.pop()
+                let currRow = curr.row
+                let currCol = curr.col
+                board[currRow][currCol].visited = true
+                board[currRow][currCol].isCellWall = false
+                //visit all neighbors -- if not visited
+                console.log(curr);
+
+                //right
+                if (currCol + 2 < boardWidth && !board[currRow][currCol + 2].visited) {
+                    board[currRow][currCol + 1].isCellWall = false
+                }
+                //bottom
+                if (currRow + 2 < boardHeight && !board[currRow + 2][currCol].visited) {
+                    board[currRow + 1][currCol].isCellWall = false
+                }
+                //left
+                if (currCol - 2 >= 0 && !board[currRow][currCol - 2].visited) {
+                    board[currRow][currCol - 1].isCellWall = false
+                }
+                //up 
+                if (currRow - 2 >= 0 && !board[currRow - 2][currCol].visited) {
+                    board[currRow - 1][currCol].isCellWall = false
+                }
+
+                switch (rand) {
+                    case 0: //right on top
+                        if (currRow + 2 < boardHeight && !board[currRow + 2][currCol].visited) fifo.push({ row: currRow + 2, col: currCol }) //bottom
+                        if (currCol - 2 >= 0 && !board[currRow][currCol - 2].visited) fifo.push({ row: currRow, col: currCol - 2 }) //left
+                        if (currRow - 2 >= 0 && !board[currRow - 2][currCol].visited) fifo.push({ row: currRow - 2, col: currCol }) //up
+                        if (currCol + 2 < boardWidth && !board[currRow][currCol + 2].visited) fifo.push({ row: currRow, col: currCol + 2 }) //right
+                        break
+                    case 1: //bottom on top
+                        if (currCol + 2 < boardWidth && !board[currRow][currCol + 2].visited) fifo.push({ row: currRow, col: currCol + 2 }) //right
+                        if (currCol - 2 >= 0 && !board[currRow][currCol - 2].visited) fifo.push({ row: currRow, col: currCol - 2 }) //left
+                        if (currRow - 2 >= 0 && !board[currRow - 2][currCol].visited) fifo.push({ row: currRow - 2, col: currCol }) //up
+                        if (currRow + 2 < boardHeight && !board[currRow + 2][currCol].visited) fifo.push({ row: currRow + 2, col: currCol }) //bottom
+                        break
+                    case 2: //left on top
+                        if (currCol + 2 < boardWidth && !board[currRow][currCol + 2].visited) fifo.push({ row: currRow, col: currCol + 2 }) //right
+                        if (currRow + 2 < boardHeight && !board[currRow + 2][currCol].visited) fifo.push({ row: currRow + 2, col: currCol }) //bottom
+                        if (currRow - 2 >= 0 && !board[currRow - 2][currCol].visited) fifo.push({ row: currRow - 2, col: currCol }) //up
+                        if (currCol - 2 >= 0 && !board[currRow][currCol - 2].visited) fifo.push({ row: currRow, col: currCol - 2 }) //left
+                        break
+                    case 3: //up
+                        if (currCol + 2 < boardWidth && !board[currRow][currCol + 2].visited) fifo.push({ row: currRow, col: currCol + 2 }) //right
+                        if (currRow + 2 < boardHeight && !board[currRow + 2][currCol].visited) fifo.push({ row: currRow + 2, col: currCol }) //bottom
+                        if (currCol - 2 >= 0 && !board[currRow][currCol - 2].visited) fifo.push({ row: currRow, col: currCol - 2 }) //left
+                        if (currRow - 2 >= 0 && !board[currRow - 2][currCol].visited) fifo.push({ row: currRow - 2, col: currCol }) //up
+                        break
+
+                    default: return
+                }
+            }
+        }
+
+        setCanDraw(true)
+    }, [incomingMazeAlgorithm])
     //visualize useEffect
     useEffect(() => {
         handleAlgorithm()
@@ -77,6 +149,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
     //     }
     //     else { //if 
     //         console.log('RESUMED')
+    //         visualizeAlgorithm()
     //     }
     // }, [incomingPausePlay])
 
@@ -283,7 +356,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
     }
 
     const visualizeAlgorithm = () => {
-        
+
         interval.current = setInterval(() => {
             let element = traversed.shift()
             board[element.row][element.col].finding = true
@@ -296,6 +369,7 @@ const Board = ({ incomingAlgorithm, incomingClearBoard, incomingClearPath, incom
                     showPath()
             }
         }, 0)
+
 
         finished = false
         fifo = []
